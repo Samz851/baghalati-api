@@ -17,11 +17,10 @@
  */
 
 const mongoose = require('mongoose');
-const {
-    Schema
-} = mongoose;
+const { Schema } = mongoose;
 
 const ClientSchema = new Schema({
+    customer_id: mongoose.Schema.Types.ObjectId,
     full_name: {
         type: String,
         required: true
@@ -57,10 +56,10 @@ const ClientSchema = new Schema({
         }
     },
 
-    billing_address: {
-        address:{
-            type: String,
-            required: true
+     billing_address: {
+         address:{
+             type: String,
+             required: true
         },
         district: {
             type: String,
@@ -82,20 +81,20 @@ const ClientSchema = new Schema({
             type: String,
             required: true
         },
-        geolocation: {
-            longitude:{
-                type: Number,
-                required: true
-            },
-            latitude:{
-                type: Number,
-                required: true
-            },
-            required: true
-        },
+         geolocation: {
+             longitude:{
+                 type: Number,
+                 required: true
+             },
+             latitude:{
+                 type: Number,
+                 required: true
+             },
+        //     required: true
+         },
 
-        required: true
-    },
+        // required: true
+     },
 
     payment_cards: [{
         card_name: {
@@ -124,6 +123,7 @@ const ClientSchema = new Schema({
         required: false
     }]
 }, {
+    
     timestamps: true,
     autoIndex: true
 });
