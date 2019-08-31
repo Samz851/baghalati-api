@@ -121,7 +121,11 @@ const ClientSchema = new Schema({
         },
 
         required: false
-    }]
+    }],
+    orders: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'products'
+    }],
 }, {
     
     timestamps: true,
