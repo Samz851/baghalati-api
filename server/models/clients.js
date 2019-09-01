@@ -124,7 +124,7 @@ const ClientSchema = new Schema({
     }],
     orders: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'products'
+        ref: 'orders'
     }],
 }, {
     
