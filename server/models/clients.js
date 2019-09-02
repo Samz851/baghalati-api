@@ -1,75 +1,144 @@
 /**
-* Name: clients
-*
-* @author Samer Alotaibi
-*		  sam@samiscoding.com
-*
-*
-*
-* Description: Clients data model
-*
-* Requirements: mongoose
-*
-* @package
-* @property
-*
-* @version 1.0
-*/
+ * Name: clients
+ *
+ * @author Samer Alotaibi
+ *		  sam@samiscoding.com
+ *
+ *
+ *
+ * Description: Clients data model
+ *
+ * Requirements: mongoose
+ *
+ * @package
+ * @property
+ *
+ * @version 1.0
+ */
 
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const ClientSchema = new Schema({
-    first_name: { type: String, required: true },
-    last_name: { type: String, required: false },
-    nick_name: { type: String, required: false, description: "too known as... as trade marks, and other"},
-    
-    tax_id: {
-        tax_type: { type: String, required: true },
-        tax_code: { type: String, requied: true, unique: true },
+    customer_id: mongoose.Schema.Types.ObjectId,
+    full_name: {
+        type: String,
+        required: true
     },
     
-    emails: [{
-        email: {type: String, required: false},
-        verified: { type: Boolean, required: false, default: false },
-        
-        required: false
-    }],
-    
-    addresses: [{
-        contact: {type: String, required: false, description: "use if client is not your contact"},
-        street: { type: String, required: true },
-        city: { type: String, required: true },
-        province: { type: String, required: true },
-        zip: { type: String, required: true },
-        
-        required: false
-    }],
-    phones: [{
-        phoneType: { type: String, required: false },
-        prefix: { type: String, required: false},
-        number: { type: String, required: true },
-        subfix: { type: String, requied: false},
-        memo: { type: String, required: false, description: "use if you need other data" },
-        
-        required: false
-    }],
-    payment_cards: [{
-        card_name: { type: String, requied: true, index: true, trim: true},
-        card_number: { type: String, required: true, index: true, trim: true},
-        expiry_date: { type: Date, requied: true, trim: true},
-        zip: { type: String, trim: true, required: false},
-    
-        requied: false
-    }]
-},{timestamps: true, autoIndex:true});
+    date_of_birth: {
+        type: Date,
+        required: true
+    },
 
-ClientSchema.index
+    contact_no: {
+        type: String,
+        /*not required by default**/
+        validate: {
+            validator: function (v) {
+                var re = /^\+?([0-9]{2})\)?[-. ]?([0-9]{4})[-. ]?([0-9]{4})$/;
+                return (v == null || v.trim().length < 1) || re.test(v);
+            },
+            message: 'Provided phone number is invalid.'
+        }
+    },
+
+    contact_email: {
+        type: String,
+        lowercase: true,
+        required: [true, "can't be blank"],
+        match: [/\S+@\S+\.\S+/, 'is invalid'],
+        index: true,
+        verified: {
+            type: Boolean,
+            required: false,
+            default: false
+        }
+    },
+
+     billing_address: {
+         address:{
+             type: String,
+             required: true
+        },
+        district: {
+            type: String,
+            required: true
+        },
+        city: {
+            type: String,
+            required: true
+        },
+        state: {
+            type: String,
+            required: true
+        },
+        zip_code: {
+            type: String,
+            required: true
+        },
+        country: {
+            type: String,
+            required: true
+        },
+         geolocation: {
+             longitude:{
+                 type: Number,
+                 required: true
+             },
+             latitude:{
+                 type: Number,
+                 required: true
+             },
+        //     required: true
+         },
+
+        // required: true
+     },
+
+    payment_cards: [{
+        card_name: {
+            type: String,
+            required: true,
+            index: true,
+            trim: true
+        },
+        card_number: {
+            type: String,
+            required: true,
+            index: true,
+            trim: true
+        },
+        expiry_date: {
+            type: Date,
+            required: true,
+            trim: true
+        },
+        zip: {
+            type: String,
+            trim: true,
+            required: false
+        },
+
+        required: false
+    }],
+    orders: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'orders'
+    }],
+}, {
+    
+    timestamps: true,
+    autoIndex: true
+});
+
 
 module.exports = mongoose.model('customers', ClientSchema);
 
 
 
 /** this ends this file
-* server/models/clients
-**/
+ * server/models/clients
+ **/
+
+ 
