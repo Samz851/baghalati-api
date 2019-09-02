@@ -15,7 +15,7 @@
 *
 * @version 1.0
 */
-
+const mongoose = require('mongoose');
 const clientsController = {};
 const Clients = require('../models/clients');;
 
@@ -26,8 +26,8 @@ clientsController.getClients = async (req, res) => {
 };
 
 clientsController.createClient = async (req, res) => {
+    req.body.customer_id = mongoose.Types.ObjectId();
     const client = new Clients(req.body);
-
     await client.save(err => {
         if (err) {
             res.json({ "error": err });
@@ -44,14 +44,10 @@ clientsController.editClientSimpleData = async (req, res) => {
     let cliente = await Clients.findById(id);
 
 
-   cliente.first_name = req.body.first_name;
-   cliente.last_name = req.body.last_name;
-   cliente.nick_name = req.body.nick_name;
-   cliente.tax_id.tax_type = req.body.tax_id.tax_type;
-   cliente.tax_id.tax_code = req.body.tax_id.tax_code;
-   cliente.emails = cliente.emails;
-   cliente.addresses = cliente.addresses;
-   cliente.phones = cliente.phones;
+   cliente.full_name = req.body.full_name;
+   cliente.contact_email = cliente.contact_email;
+   cliente.billing_address = cliente.billing_address;
+   cliente.contact_no = cliente.contact_no;
 
     await cliente.save()
         .then( () => {
