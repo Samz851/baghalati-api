@@ -70,9 +70,12 @@ clientsController.editEmailsData = async (req, res) => {
     const { email }  = req.params;
    
     await Clients.findOneAndUpdate(
-        {"_id": id, "emails._id": email},
+        {
+            "_id": id,
+            "contact_email._id": email
+        },
         { '$set': {
-            'emails.$': req.body
+            'contact_email.$': req.body
         }})
             .then( doc => {
                 res.json({"status": "200"});
@@ -99,8 +102,15 @@ clientsController.editAddressData = async (req, res) => {
     const { address } = req.params;
 
     await Clients.findOneAndUpdate(
-        {"_id": id, "addresses._id": address},
-        { "$set": { "addresses.$" : req.body } }
+        {
+            "_id": id,
+            "billing_address._id": address
+        },
+        {
+            "$set": {
+                "billing_address.$": req.body
+            }
+        }
     )
         .then(doc => {
             res.json({ "status": "200" });
@@ -128,8 +138,15 @@ clientsController.editPhonesData = async (req, res) => {
     const { phone } = req.params;
 
     await Clients.findOneAndUpdate(
-        { "_id": id, "phones._id": phone },
-        { "$set": { "phones.$": req.body } }
+        {
+            "_id": id,
+            "contact_no._id": phone
+        },
+        {
+            "$set": {
+                "contact_no.$": req.body
+            }
+        }
     )
         .then(doc => {
             res.json({ "status": "200" });
@@ -139,6 +156,8 @@ clientsController.editPhonesData = async (req, res) => {
         });
 
 };
+
+// Redundant Push block start
 
 clientsController.pushEmails = async (req, res) => {
     const newEmails = req.body;
@@ -182,6 +201,8 @@ clientsController.pushPhones = async (req, res) => {
             res.json({ "status": "200" })
         );
 };
+
+// Redundant Push block end
 
 clientsController.deleteEmails = async (req, res) => {
     const { email } = req.params;
