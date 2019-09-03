@@ -16,17 +16,19 @@
 * @version 1.0
 */
 const mongoose = require('mongoose');
+const Bcrypt = require("bcryptjs");
 const clientsController = {};
 const Clients = require('../models/clients');;
 
 clientsController.getClients = async (req, res) => {
     const clients = await Clients.find();
-
     res.json(clients);
 };
 
 clientsController.createClient = async (req, res) => {
     req.body.customer_id = mongoose.Types.ObjectId();
+    req.body.password = Bcrypt.hashSync(req.body.password, 10);
+
     const client = new Clients(req.body);
     await client.save(err => {
         if (err) {
@@ -243,6 +245,31 @@ clientsController.deleteClient = async (req, res) => {
         .then( () => {
             res.json({"status":"200"});
         });
+};
+
+clientsController.clientAuthentication = async (req,res) =>{
+    try{
+        var user = await Clients.findOne({
+                contact_email: req.body.contact_email
+            }).exec();
+        console.log("User: "+ user);
+        
+        if (!user) {
+            return res.status(400).send({
+                message: "The email does not exist"
+            });
+        }
+        if (!Bcrypt.compareSync(req.body.password, user.password)) {
+            return res.status(400).send({
+                message: "The password is invalid"
+            });
+        }
+        res.send({
+            message: "The username and password combination is correct!"
+        });
+    } catch (error) {
+        res.status(500).send(error);
+    }
 };
 
 clientsController.getClient = async (req,res) => {

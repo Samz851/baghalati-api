@@ -33,6 +33,11 @@ const ClientSchema = new Schema({
         required: true
     },
     
+    password: {
+        type: String,
+        trim: true,
+        required: "Password is Required"
+    },
     date_of_birth: {
         type: Date,
         required: true,
@@ -58,6 +63,7 @@ const ClientSchema = new Schema({
         required: [true, "can't be blank"],
         match: [/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/, 'is invalid'],
         index: true,
+        unique: true,
         verified: {
             type: Boolean,
             required: false,
