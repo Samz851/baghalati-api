@@ -32,7 +32,7 @@ clientsController.createClient = async (req, res) => {
     const client = new Clients(req.body);
     await client.save(err => {
         if (err) {
-            res.json({ "error": err });
+            res.status(500).json({ "error": err });
         }
         else {
             res.json({ "status": "200" });
