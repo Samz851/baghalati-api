@@ -286,7 +286,8 @@ clientsController.clientAuthentication = async (req,res) =>{
             });
         }
         res.send({
-            message: "The username and password combination is correct!"
+            message: "The username and password combination is correct!",
+            user_id: user.customer_id
         });
     } catch (error) {
         res.status(500).send(error);
