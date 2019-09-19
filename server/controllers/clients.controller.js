@@ -27,8 +27,9 @@ clientsController.getClients = async (req, res) => {
 
 clientsController.createClient = async (req, res) => {
     req.body.customer_id = mongoose.Types.ObjectId();
-    req.body.password = Bcrypt.hashSync(req.body.password, 10);
-
+    if (req.body.password){
+        req.body.password = Bcrypt.hashSync(req.body.password, 10);
+    }
     const client = new Clients(req.body);
     await client.save(err => {
         if (err) {
