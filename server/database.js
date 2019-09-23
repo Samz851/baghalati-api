@@ -17,7 +17,7 @@
 */
 const mongoose = require('mongoose');
 
-const URI = 'mongodb://localhost:27017/app-commerce';
+const URI = 'mongodb://localhost:27017/baghalatiDB';
 
 mongoose.connect(URI, {
     useNewUrlParser: true
