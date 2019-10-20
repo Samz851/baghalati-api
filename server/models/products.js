@@ -33,7 +33,12 @@ const productSchema = new Schema(
         to_serve: { type: Number, required: false },
         to_receive: { type: Number, required: false },
         ubication: { type: String, required: false },
-        images: [{ image: String }]
+        images: [{ image: String }],
+        category: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'categories',
+            required: false
+        }
     },
     {timestamps: true, autoIndex: true}
 );

@@ -40,6 +40,7 @@ app.use(cors({origin: 'http://localhost:4200'}));
 app.use('/api/products', require('./routes/product.routes'));
 app.use('/api/clients', require('./routes/clients.routes'));
 app.use('/api/suppliers', require('./routes/suppliers.routes'));
+app.use('/api/categories', require('./routes/categories.routes'));
 /**
  * S T A R T I N G   S E R V E R
  */
