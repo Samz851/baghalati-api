@@ -15,22 +15,25 @@
 *
 * @version 1.0
 */
-
+const mongoose = require('mongoose');
+const Bcrypt = require("bcryptjs");
 const clientsController = {};
 const Clients = require('../models/clients');;
 
 clientsController.getClients = async (req, res) => {
     const clients = await Clients.find();
-
     res.json(clients);
 };
 
 clientsController.createClient = async (req, res) => {
+    req.body.customer_id = mongoose.Types.ObjectId();
+    if (req.body.password){
+        req.body.password = Bcrypt.hashSync(req.body.password, 10);
+    }
     const client = new Clients(req.body);
-
     await client.save(err => {
         if (err) {
-            res.json({ "error": err });
+            res.status(500).json({ "error": err });
         }
         else {
             res.json({ "status": "200" });
@@ -44,14 +47,10 @@ clientsController.editClientSimpleData = async (req, res) => {
     let cliente = await Clients.findById(id);
 
 
-   cliente.first_name = req.body.first_name;
-   cliente.last_name = req.body.last_name;
-   cliente.nick_name = req.body.nick_name;
-   cliente.tax_id.tax_type = req.body.tax_id.tax_type;
-   cliente.tax_id.tax_code = req.body.tax_id.tax_code;
-   cliente.emails = cliente.emails;
-   cliente.addresses = cliente.addresses;
-   cliente.phones = cliente.phones;
+   cliente.full_name = req.body.full_name;
+   cliente.contact_email = cliente.contact_email;
+   cliente.billing_address = cliente.billing_address;
+   cliente.contact_no = cliente.contact_no;
 
     await cliente.save()
         .then( () => {
@@ -72,9 +71,12 @@ clientsController.editEmailsData = async (req, res) => {
     const { email }  = req.params;
    
     await Clients.findOneAndUpdate(
-        {"_id": id, "emails._id": email},
+        {
+            "_id": id,
+            "contact_email._id": email
+        },
         { '$set': {
-            'emails.$': req.body
+            'contact_email.$': req.body
         }})
             .then( doc => {
                 res.json({"status": "200"});
@@ -101,8 +103,15 @@ clientsController.editAddressData = async (req, res) => {
     const { address } = req.params;
 
     await Clients.findOneAndUpdate(
-        {"_id": id, "addresses._id": address},
-        { "$set": { "addresses.$" : req.body } }
+        {
+            "_id": id,
+            "billing_address._id": address
+        },
+        {
+            "$set": {
+                "billing_address.$": req.body
+            }
+        }
     )
         .then(doc => {
             res.json({ "status": "200" });
@@ -130,8 +139,15 @@ clientsController.editPhonesData = async (req, res) => {
     const { phone } = req.params;
 
     await Clients.findOneAndUpdate(
-        { "_id": id, "phones._id": phone },
-        { "$set": { "phones.$": req.body } }
+        {
+            "_id": id,
+            "contact_no._id": phone
+        },
+        {
+            "$set": {
+                "contact_no.$": req.body
+            }
+        }
     )
         .then(doc => {
             res.json({ "status": "200" });
@@ -141,6 +157,8 @@ clientsController.editPhonesData = async (req, res) => {
         });
 
 };
+
+// Redundant Push block start
 
 clientsController.pushEmails = async (req, res) => {
     const newEmails = req.body;
@@ -184,6 +202,8 @@ clientsController.pushPhones = async (req, res) => {
             res.json({ "status": "200" })
         );
 };
+
+// Redundant Push block end
 
 clientsController.deleteEmails = async (req, res) => {
     const { email } = req.params;
@@ -247,6 +267,32 @@ clientsController.deleteClient = async (req, res) => {
         .then( () => {
             res.json({"status":"200"});
         });
+};
+
+clientsController.clientAuthentication = async (req,res) =>{
+    try{
+        var user = await Clients.findOne({
+                contact_email: req.body.contact_email
+            }).exec();
+        console.log("User: "+ user);
+        
+        if (!user) {
+            return res.status(400).send({
+                message: "The email does not exist"
+            });
+        }
+        if (!Bcrypt.compareSync(req.body.password, user.password)) {
+            return res.status(400).send({
+                message: "The password is invalid"
+            });
+        }
+        res.send({
+            message: "The username and password combination is correct!",
+            user_id: user.customer_id
+        });
+    } catch (error) {
+        res.status(500).send(error);
+    }
 };
 
 clientsController.getClient = async (req,res) => {

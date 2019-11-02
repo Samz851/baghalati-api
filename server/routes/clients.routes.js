@@ -24,6 +24,7 @@ const clientsController = require('../controllers/clients.controller');
 router.get('/', clientsController.getClients);
 router.get('/:id', clientsController.getClient);
 
+router.post('/login/', clientsController.clientAuthentication);
 router.post('/', clientsController.createClient);
 router.post('/email/:id', clientsController.pushEmails);
 router.post('/address/:id', clientsController.pushAddresses);
