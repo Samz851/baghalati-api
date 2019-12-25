@@ -30,6 +30,9 @@ router.post('/email/:id', clientsController.pushEmails);
 router.post('/address/:id', clientsController.pushAddresses);
 router.post('/phone/:id', clientsController.pushPhones);
 router.post('/paymentcard/:id', clientsController.pushPaymentCard);
+router.post('/testhello', (req, res) => {
+    res.json({success: true, message: "Hello World from Client Routes"})
+})
 
 
 router.put('/:id', clientsController.editClientSimpleData);

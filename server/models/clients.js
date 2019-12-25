@@ -115,6 +115,12 @@ const ClientSchema = new Schema({
         // required: true
      },
 
+     sub_accounts: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'customers',
+        required: false
+     }],
+
     payment_cards: [{
         card_name: {
             type: String,
@@ -152,6 +158,14 @@ const ClientSchema = new Schema({
 });
 
 ClientSchema.plugin(uniqueValidator);
+ClientSchema.methods.getHikeUpdateObject = function(){
+    return {
+        first_name: this.full_name.split(' ')[0],
+        last_name: this.full_name.split(' ')[1],
+        phone: this.contact_no,
+        email: this.contact_email
+    }
+}
 
 module.exports = mongoose.model('customers', ClientSchema);
 

@@ -20,18 +20,19 @@ const app = express();
 const cors = require('cors');
 
 const { mongoose } = require('./database');
+const { hikeup } = require('./pos');
 
 /**
  * S E T T I N G S
  */
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 3210);
 
 /**
  * M I D D L E W A R E S
  */
 app.use(morgan('dev'));
 app.use(express.json());
-app.use(cors({origin: 'http://localhost:4200'}));
+app.use(cors({origin: '*'}));
 
 
 /**

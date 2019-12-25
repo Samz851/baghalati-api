@@ -18,7 +18,10 @@
 const mongoose = require('mongoose');
 const Bcrypt = require("bcryptjs");
 const clientsController = {};
-const Clients = require('../models/clients');;
+const Clients = require('../models/clients');
+const Config = require('../../config');
+const jwt = require('jsonwebtoken');
+const https = require('axios');
 
 clientsController.getClients = async (req, res) => {
     const clients = await Clients.find();
@@ -36,6 +39,19 @@ clientsController.createClient = async (req, res) => {
             res.status(500).json({ "error": err });
         }
         else {
+            const config = {
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                }
+              }
+              const URI = 'https://api.hikeup.com/api/v1/customers/createOrUpdate';
+              const requestBody = client.getHikeUpdateObject();
+
+            https.post(URI, requestBody, config)
+            .then((result) => {
+                console.log('create client HIKE result: ');
+                console.log(result);
+            })
             res.json({ "status": "200" });
         }
     });
@@ -270,11 +286,12 @@ clientsController.deleteClient = async (req, res) => {
 };
 
 clientsController.clientAuthentication = async (req,res) =>{
+    console.log(req.body)
     try{
         var user = await Clients.findOne({
                 contact_email: req.body.contact_email
             }).exec();
-        console.log("User: "+ user);
+        // console.log("User: "+ user);
         
         if (!user) {
             return res.status(400).send({
@@ -286,9 +303,21 @@ clientsController.clientAuthentication = async (req,res) =>{
                 message: "The password is invalid"
             });
         }
+        //SAM prepare JWT
+        var token = jwt.sign({ 
+            name: user.full_name,
+            dob: user.date_of_birth,
+            phone: user.contact_no,
+            email: user.contact_email,
+            address: user.billing_address,
+            sub_accounts: user.sub_accounts
+        }, Config.jwt.secret);
+        var decoded = jwt.verify(token, Config.jwt.secret);
+        console.log(decoded);
         res.send({
             message: "The username and password combination is correct!",
-            user_id: user.customer_id
+            token: token,
+            sid: Config.jwt.uniqid()
         });
     } catch (error) {
         res.status(500).send(error);
