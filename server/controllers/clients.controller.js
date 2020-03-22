@@ -188,8 +188,8 @@ clientsController.pushAddresses = async (req, res) => {
         .then( (client) => {
             client.addresses.push(newAddresses);
             client.save();
-        }).catch( e => console.log(e)).then(
-            res.json({"status":"200"})
+        }).catch( e => res.json({success: false, message: 'failed to save address', error: e})).then(
+            res.json({success: true, message: 'address saved'})
         );
 };
 
@@ -286,11 +286,13 @@ clientsController.clientAuthentication = async (req,res) =>{
         
         if (!user) {
             return res.status(400).send({
+                success: false,
                 message: "The email does not exist"
             });
         }
         if (!Bcrypt.compareSync(req.body.password, user.password)) {
             return res.status(400).send({
+                success: false,
                 message: "The password is invalid"
             });
         }
@@ -377,6 +379,21 @@ clientsController.deletePaymentCard = async (req, res) => {
             res.json({ "status": "200" });
         });
 };
+
+clientsController.getPaymentCard = async (req, res) => {
+    const { token } = req.params;
+    try {
+        let verified = await jwt.verify( token, Config.jwt.secret);
+        if(verified){
+            await Clients.findById(veriefied.id)
+                    .then((client) => {
+                        res.json({success: true, load: client.payment_cards})
+                    }).catch(e => console.log(e));
+        }
+    }catch(err){
+        throw err;
+    }
+}
 
 clientsController.testUserAPI = function(req, res){
     res.json({success:true, message: 'User API working'});
