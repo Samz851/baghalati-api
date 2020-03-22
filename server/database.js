@@ -19,7 +19,8 @@ const mongoose = require('mongoose');
 
 const URI = 'mongodb://localhost:27017/baghalatiDB';
 
-mongoose.connect(URI, {
+const remote_URI = 'mongodb+srv://baghalati:CaH7bWH7Hin1l8K9@cluster0-yntzv.mongodb.net/jubnwbDB';
+mongoose.connect(remote_URI, {
     useNewUrlParser: true
 })
     .then(db => console.log(`${URI} is connected`))
