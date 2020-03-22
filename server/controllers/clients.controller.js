@@ -29,32 +29,19 @@ clientsController.getClients = async (req, res) => {
 };
 
 clientsController.createClient = async (req, res) => {
+    console.log(req.body);
     req.body.customer_id = mongoose.Types.ObjectId();
     if (req.body.password){
         req.body.password = Bcrypt.hashSync(req.body.password, 10);
     }
     const client = new Clients(req.body);
-    await client.save(err => {
-        if (err) {
-            res.status(500).json({ "error": err });
-        }
-        else {
-            const config = {
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded'
-                }
-              }
-              const URI = 'https://api.hikeup.com/api/v1/customers/createOrUpdate';
-              const requestBody = client.getHikeUpdateObject();
-
-            https.post(URI, requestBody, config)
-            .then((result) => {
-                console.log('create client HIKE result: ');
-                console.log(result);
-            })
-            res.json({ "status": "200" });
-        }
-    });
+    try{
+        let user = await client.save();
+        res.json({ "status": "200", user: {_id: user._id}});
+    }
+    catch(err){
+        res.json({"status": "400", "message": err})
+    }
 };
 
 clientsController.editClientSimpleData = async (req, res) => {
@@ -286,6 +273,10 @@ clientsController.deleteClient = async (req, res) => {
 };
 
 clientsController.clientAuthentication = async (req,res) =>{
+
+    //TODO::
+    //      Session management
+
     console.log(req.body)
     try{
         var user = await Clients.findOne({
@@ -304,7 +295,8 @@ clientsController.clientAuthentication = async (req,res) =>{
             });
         }
         //SAM prepare JWT
-        var token = jwt.sign({ 
+        var token = jwt.sign({
+            ID: user._id, 
             name: user.full_name,
             dob: user.date_of_birth,
             phone: user.contact_no,
@@ -315,6 +307,7 @@ clientsController.clientAuthentication = async (req,res) =>{
         var decoded = jwt.verify(token, Config.jwt.secret);
         console.log(decoded);
         res.send({
+            success: true,
             message: "The username and password combination is correct!",
             token: token,
             sid: Config.jwt.uniqid()
@@ -325,11 +318,14 @@ clientsController.clientAuthentication = async (req,res) =>{
 };
 
 clientsController.getClient = async (req,res) => {
+    console.log(`the ID is \: ${req.params}`)
     const { id } = req.params;
 
     await Clients.findById(id)
         .then( (response) => {
-            res.json(response);
+            console.log('got it');
+            console.log(response)
+            res.json({success: true, content: response});
         }
     );
 };
@@ -382,6 +378,9 @@ clientsController.deletePaymentCard = async (req, res) => {
         });
 };
 
+clientsController.testUserAPI = function(req, res){
+    res.json({success:true, message: 'User API working'});
+}
 
 module.exports = clientsController;
 

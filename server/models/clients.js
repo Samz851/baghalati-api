@@ -27,6 +27,10 @@ const ClientSchema = new Schema({
         unique: true,
         required: true,
     },
+    is_primary: {
+        type: Boolean,
+        required: true
+    },
     full_name: {
         type: String,
         match: [/^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/, "Invalid Name"],
@@ -158,14 +162,6 @@ const ClientSchema = new Schema({
 });
 
 ClientSchema.plugin(uniqueValidator);
-ClientSchema.methods.getHikeUpdateObject = function(){
-    return {
-        first_name: this.full_name.split(' ')[0],
-        last_name: this.full_name.split(' ')[1],
-        phone: this.contact_no,
-        email: this.contact_email
-    }
-}
 
 module.exports = mongoose.model('customers', ClientSchema);
 
