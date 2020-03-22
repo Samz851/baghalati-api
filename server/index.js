@@ -18,14 +18,20 @@ const express = require('express');
 const morgan = require('morgan');
 const app = express();
 const cors = require('cors');
+const POS = require('./pos');
 
 const { mongoose } = require('./database');
-const { hikeup } = require('./pos');
 
 /**
  * S E T T I N G S
  */
 app.set('port', process.env.PORT || 3210);
+
+/** 
+ * H I K E U P  A U T H
+ */
+// let temp_code = POS.requestAccessToken();
+// console.log(temp_code);
 
 /**
  * M I D D L E W A R E S

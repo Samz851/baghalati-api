@@ -1,5 +1,5 @@
 /**
-* Name: database
+* Name: HIKEUP POS
 *
 * @author Samer Alotaibi
 *		  sam@samiscoding.com
@@ -17,8 +17,11 @@
 */
 const https = require('axios');
 const qs = require('querystring')
-const URI = 'https://api.hikeup.com/oauth/token';
-
+const config = require('../config')
+const tokenURI = 'https://api.hikeup.com/oauth/token';
+const authURI = 'https://api.hikeup.com/oauth/authorize';
+const authtCode = "e92f52ce3166455c96f519aa98c706f903314c7a84f84ba9b72451babe924996";   // DEV ONLY
+var POS = {};
 // hikeup = https.get(URI, (res) => {
 //     // console.log('response is: ');
 //     console.log(res.rawHeaders)
@@ -27,7 +30,7 @@ const URI = 'https://api.hikeup.com/oauth/token';
 //         process.stdout.write(d);
 //       });
 // })
-const config = {
+const req_config = {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     }
@@ -35,30 +38,26 @@ const config = {
   const requestBody = {
     client_id: 'jubnawebaith-app-2c1b2b595e',
     client_secret: 'ff5700a000b04e47accd84b215dac4b4',
-    code: '548ad434dcbc44aa8d3cb8605fd0b97bf333ed4a4e1148a097148d985e742d10',
+    code: 'bcfd562e2ec444dc8598e5c369317fdfe46d0494794f4cd5b301739d7e67fd08',
     redirect_uri: 'https://samiscoding.com',
     grant_type: 'authorization_code'
 }
-// https.post(URI, requestBody, config)
-//   .then((result) => {
-//     // Do somthing
-//     console.log('result: ');
-//     console.log(result);
-//   })
-//   .catch((err) => {
-//     // Do somthing
-//     console.log('Error:');
-//     console.log(err.message)
-//   })
-// token.on('response', (resObj) => {
-//     console.log('responce object is:')
-//     console.log(resObj);
-// })
-// token.on('error', (e) => {
-//     console.error(`problem with request: ${e.message}`);
-//   });
-// token.write(JSON.stringify(data));
-// token.end();
-module.exports = '';
+
+POS.requestAccessToken = async () => {
+  let requestB = {
+    client_id: config.POS.app_id,
+    client_secret: config.POS.app_secret,
+    code: authtCode,
+    redirect_uri: config.POS.redirect_uri,
+    grant_type: 'authorization_code'
+  }
+  try {
+    response = await https.post(tokenURI, requestBody, req_config);
+    return response;
+  } catch (e) {
+    console.log(e.response);
+  }
+}
+module.exports = POS;
 
 
