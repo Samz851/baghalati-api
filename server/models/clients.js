@@ -75,7 +75,7 @@ const ClientSchema = new Schema({
         }
     },
 
-    billing_address: {
+    billing_address: [{
          address:{
              type: String,
              required: true
@@ -117,7 +117,7 @@ const ClientSchema = new Schema({
          },
 
         // required: true
-     },
+     }],
 
      sub_accounts: [{
         type: mongoose.Schema.Types.ObjectId,
