@@ -37,10 +37,10 @@ clientsController.createClient = async (req, res) => {
     const client = new Clients(req.body);
     try{
         let user = await client.save();
-        res.json({ "status": "200", user: {_id: user._id}});
+        res.json({ "success": true, user: {_id: user._id}});
     }
     catch(err){
-        res.json({"status": "400", "message": err})
+        res.json({"success": false, "message": err})
     }
 };
 
@@ -183,14 +183,16 @@ clientsController.pushEmails = async (req, res) => {
 clientsController.pushAddresses = async (req, res) => {
     const newAddresses = req.body;
     const { id } = req.params;
-
-    await Clients.findById(id)
-        .then( (client) => {
-            client.billing_address.push(newAddresses);
-            client.save();
-        }).catch( e => res.json({success: false, message: 'failed to save address', error: e})).then(
-            res.json({success: true, message: 'address saved'})
-        );
+    await Clients.update(
+        { _id: id },
+        { $push: { billing_address: newAddresses } }
+    ).then( (result) => {
+            if(result.nModified > 0){
+                res.json({success: true, message: 'address saved'})
+            }else{
+                res.json({success: false, message: 'failed to save address', error: e})
+            }
+        }).catch( e => res.json({success: false, message: 'failed to save address', error: e}));
 };
 
 clientsController.pushPhones = async (req, res) => {
