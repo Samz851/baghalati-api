@@ -186,7 +186,7 @@ clientsController.pushAddresses = async (req, res) => {
 
     await Clients.findById(id)
         .then( (client) => {
-            client.addresses.push(newAddresses);
+            client.billing_address.push(newAddresses);
             client.save();
         }).catch( e => res.json({success: false, message: 'failed to save address', error: e})).then(
             res.json({success: true, message: 'address saved'})
