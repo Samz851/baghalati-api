@@ -182,6 +182,8 @@ clientsController.pushEmails = async (req, res) => {
 
 clientsController.pushAddresses = async (req, res) => {
     const newAddresses = req.body;
+    console.log('NEW ADDRESS ISSSSSSSSSSSS::::::::::::::::::::::::::::::::::');
+    console.log(newAddresses);
     const { id } = req.params;
     await Clients.update(
         { _id: id },
