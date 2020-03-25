@@ -321,17 +321,37 @@ clientsController.clientAuthentication = async (req,res) =>{
     }
 };
 
-clientsController.getClient = async (req,res) => {
-    console.log(`the ID is \: ${req.params}`)
+clientsController.getClient = async (req, res) => {
     const { id } = req.params;
+    var user = await Clients.findOne({
+        _id: id
+    }).exec();
+    // console.log("User: "+ user);
 
-    await Clients.findById(id)
-        .then( (response) => {
-            console.log('got it');
-            console.log(response)
-            res.json({success: true, content: response});
-        }
-    );
+    if (!user) {
+        return res.status(400).send({
+            success: false,
+            message: "The email does not exist"
+        });
+    }
+    //SAM prepare JWT
+    var token = jwt.sign({
+        ID: user._id, 
+        name: user.full_name,
+        dob: user.date_of_birth,
+        phone: user.contact_no,
+        email: user.contact_email,
+        address: user.billing_address,
+        sub_accounts: user.sub_accounts
+    }, Config.jwt.secret);
+    var decoded = jwt.verify(token, Config.jwt.secret);
+    console.log(decoded);
+    res.send({
+        success: true,
+        message: "The username and password combination is correct!",
+        token: token,
+        sid: Config.jwt.uniqid()
+    });
 };
 
 clientsController.pushPaymentCard = async (req, res) => {
