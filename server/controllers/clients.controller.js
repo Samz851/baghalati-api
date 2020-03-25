@@ -182,8 +182,6 @@ clientsController.pushEmails = async (req, res) => {
 
 clientsController.pushAddresses = async (req, res) => {
     const newAddresses = req.body;
-    console.log('NEW ADDRESS ISSSSSSSSSSSS::::::::::::::::::::::::::::::::::');
-    console.log(newAddresses);
     const { id } = req.params;
     await Clients.update(
         { _id: id },
@@ -236,15 +234,14 @@ clientsController.deleteAddresses = async (req, res) => {
 
     await Clients.update(
         {_id: id},
-        { $pull: {addresses: {_id: address} } },
+        { $pull: {billing_address: {_id: address} } },
         {safe: true}
     )
-        .then( ( response ) => {
-            console.log(client);
+        .then( ( result ) => {
+            res.json({success: true, result: result})
         })
-        .catch( e => console.log(e))
-        .then( () => {
-            res.json({"status": "200"});
+        .catch( e => {
+            res.json({success: false, result: e});
         });
 };
 
