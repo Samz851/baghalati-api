@@ -237,12 +237,13 @@ clientsController.deleteAddresses = async (req, res) => {
         { $pull: {billing_address: {_id: address} } },
         {safe: true}
     )
-        .then( ( result ) => {
-            res.json({success: true, result: result})
-        })
-        .catch( e => {
-            res.json({success: false, result: e});
-        });
+        .then( (result) => {
+            if(result.nModified > 0){
+                res.json({success: true, message: 'address deleted'})
+            }else{
+                res.json({success: false, message: 'failed to delete address', error: e})
+            }
+        }).catch( e => res.json({success: false, message: 'failed to delete address', error: e}));
 };
 
 clientsController.deletePhones = async (req, res) => {
