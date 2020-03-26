@@ -33,7 +33,6 @@ const ClientSchema = new Schema({
     },
     full_name: {
         type: String,
-        match: [/^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/, "Invalid Name"],
         required: true
     },
     
@@ -88,33 +87,21 @@ const ClientSchema = new Schema({
             type: String,
             required: true
         },
-        state: {
-            type: String,
-            required: true
+        geolocation: {
+            longitude:{
+            type: Number,
+            required: true,
+            min: [-180,"Less than allowed value"],
+            max: [180, "More than allowed value"]
+            },
+            latitude:{
+            type: Number,
+            required: true,
+            min: [-90, "Less than allowed value"],
+            max: [90, "More than allowed value"]
+            },
+    //     required: true
         },
-        zip_code: {
-            type: String,
-            required: true
-        },
-        country: {
-            type: String,
-            required: true
-        },
-         geolocation: {
-             longitude:{
-                type: Number,
-                required: true,
-                min: [-180,"Less than allowed value"],
-                max: [180, "More than allowed value"]
-             },
-             latitude:{
-                type: Number,
-                required: true,
-                min: [-90, "Less than allowed value"],
-                max: [90, "More than allowed value"]
-             },
-        //     required: true
-         },
 
         // required: true
      }],
