@@ -37,6 +37,24 @@ clientsController.createClient = async (req, res) => {
     const client = new Clients(req.body);
     try{
         let user = await client.save();
+        //SAM prepare JWT
+        var token = jwt.sign({
+            ID: user._id, 
+            name: user.full_name,
+            dob: user.date_of_birth,
+            phone: user.contact_no,
+            email: user.contact_email,
+            address: user.billing_address,
+            sub_accounts: user.sub_accounts
+        }, Config.jwt.secret);
+        var decoded = jwt.verify(token, Config.jwt.secret);
+        console.log(decoded);
+        res.send({
+            success: true,
+            message: "Registration successful",
+            token: token,
+            sid: Config.jwt.uniqid()
+        });
         res.json({ "success": true, user: {_id: user._id}});
     }
     catch(err){
