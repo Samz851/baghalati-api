@@ -28,12 +28,12 @@ const AdminSchema = new Schema({
         required: true,
     },
     email: {
-        type:mongoose.Schema.Types.ObjectId,
+        type: String,
         unique: true,
         required: true,
     },
     username: {
-        type:mongoose.Schema.Types.ObjectId,
+        type: String,
         unique: true,
         required: true,
     },
