@@ -49,22 +49,9 @@ app.use('/api/clients', require('./routes/clients.routes'));
 app.use('/api/suppliers', require('./routes/suppliers.routes'));
 app.use('/api/categories', require('./routes/categories.routes'));
 app.use('/api/admin', require('./routes/admins.routes'));
+app.unsubscribe('/api/pos/', require('./routes/POS.routes'));
 
-//Hikeup Code
-app.get('/hikeup-authorize', (req, res) => {
-    res.json({
-        host: req.hostname,
-        originalURL: req.originalUrl
-    })
-})
-app.get('/hikeup-redirect', (req, res) => {
-    console.log('HIKE UP OBJ');
-    console.log(req.params)
-    if(req.params.code){
-        process.env.HUCODE = req.params.code;
-    }
-    console.log(process.env.HUCODE);
-});
+
 /**
  * S T A R T I N G   S E R V E R
  */
