@@ -23,7 +23,7 @@ const adminsController = require('../controllers/admins.controller');
 
 router.post('/register', adminsController.register);
 router.post('/login', adminsController.login);
-// router.get('/csrf', adminsController.getCSRF);
+router.post('/sid', adminsController.verifySID);
 
 
 module.exports = router;

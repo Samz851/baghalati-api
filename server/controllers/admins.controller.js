@@ -48,13 +48,13 @@ adminsController.login = async (req, res) => {
         if(!user){
             return res.status(400).send({
                 success: false,
-                message: 'Login Failed'
+                message: 'The Email is invalid'
             })
         }
         if (!Bcrypt.compareSync(password, user.password)) {
             return res.status(400).send({
                 success: false,
-                message: "The password is invalid"
+                message: "The Password is invalid"
             });
         }else{
             user.session_id = v1();
