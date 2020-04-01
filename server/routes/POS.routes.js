@@ -14,12 +14,14 @@
 *
 * @version 1.0
 */
+const express = require('express');
+const router = express.Router();
 
-router.get('/hikeup-redirect', (req, res) => {
-    if(req.params.code){
-        process.env.HUCODE = req.params.code;
-    }
-});
+const POSController = require('../controllers/POS.controller');
+
+
+router.get('/hikeup-authorize', POSController.authorize )
+router.get('/hikeup-redirect', POSController.redirect );
 
 
 module.exports = router;
