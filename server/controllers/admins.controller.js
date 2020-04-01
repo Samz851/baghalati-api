@@ -71,6 +71,32 @@ adminsController.login = async (req, res) => {
 
 }
 
+adminsController.verifySID = async (req, res) => {
+    const { sid } = req.body;
+    let user = await Admins.findOne({session_id: sid}).exec();
+    if(!user){
+        return res.status(400).send({
+            success: false,
+            message: 'Login Failed'
+        })
+    }
+    if (user.session_id !== sid ) {
+        return res.status(400).send({
+            success: false,
+            message: "The SID is invalid"
+        });
+    }else{
+        user.session_id = v1();
+        let success = await user.save();
+        if(success){
+            res.json({success: true, session: user.session_id});
+        }else{
+            res.json({success: false, message: 'Failed to generate session token'})
+        }
+    }
+
+}
+
 
 module.exports = adminsController;
 
