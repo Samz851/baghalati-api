@@ -20,8 +20,8 @@ const POSController = {};
 const qs = require('querystring')
 const tokenURI = 'https://api.hikeup.com/oauth/token';
 const authURI = 'https://api.hikeup.com/oauth/authorize';
-const client_id =  'jubnawebaith-app-2c1b2b595e';
-const client_secret = 'ff5700a000b04e47accd84b215dac4b4';
+const client_id =  'baghalati-1be96a0e45';
+const client_secret = '452e2c42d33e48c9b755bdae9991ce46';
 const redirect_uri = 'https://api.baghalati.com/api/pos/hikeup-redirect';
 const authorizeURI = `https://api.hikeup.com/oauth/authorize?response_type=code&client_id=${client_id}&redirect_uri=${redirect_uri}&scope=all`;
 var headers = {'Content-Type': 'application/x-www-form-urlencoded'}
