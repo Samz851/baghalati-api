@@ -49,7 +49,7 @@ app.use('/api/clients', require('./routes/clients.routes'));
 app.use('/api/suppliers', require('./routes/suppliers.routes'));
 app.use('/api/categories', require('./routes/categories.routes'));
 app.use('/api/admin', require('./routes/admins.routes'));
-app.unsubscribe('/api/pos/', require('./routes/POS.routes'));
+app.unsubscribe('/api/pos', require('./routes/POS.routes'));
 
 
 /**
