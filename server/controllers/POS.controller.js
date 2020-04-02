@@ -25,12 +25,10 @@ const authURI = 'https://api.hikeup.com/oauth/authorize';
 const client_id =  'baghalati-1be96a0e45';
 const client_secret = '452e2c42d33e48c9b755bdae9991ce46';
 const redirect_uri = 'https://api.baghalati.com/api/pos/hikeup-redirect';
-const tokenURI = 'https://api.hikeup.com/oauth/token';
 
 const authorizeURI = (user_token) => {
     return `https://api.hikeup.com/oauth/authorize?response_type=code&client_id=${client_id}&redirect_uri=${redirect_uri}&state=${user_token}&scope=all`;
 }
-var headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 var origURL = '';
 
 
