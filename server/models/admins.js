@@ -50,6 +50,24 @@ const AdminSchema = new Schema({
     csrf_id: {
         type: String
     },
+
+    pos_data: {
+        access_token: {
+            type: String
+        },
+        token_type: {
+            type: String
+        },
+        expires: {
+            type: Number
+        },
+        expires_in: {
+            type: Number
+        },
+        refresh_token: {
+            type: String
+        }
+    }
 }, {
     
     timestamps: true,
