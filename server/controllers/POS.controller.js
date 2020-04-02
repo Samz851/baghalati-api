@@ -45,9 +45,9 @@ POSController.authorize = async (req, res) => {
 
 POSController.redirect = async (req, res) => {
     console.log('HIKE UP OBJ');
-    console.log(req.params)
-    if(req.params.code){
-        process.env.HUCODE = req.params.code;
+    console.log(req.query)
+    if(req.query.code){
+        process.env.HUCODE = req.query.code;
     }
     console.log(process.env.HUCODE);
 }
