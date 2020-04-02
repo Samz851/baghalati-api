@@ -64,6 +64,7 @@ POSController.redirect = async (req, res) => {
             console.log("HIKEUP AUTH RESPONSE:::::");
             console.log(response)
           } catch (e) {
+            console.log("HIKEUP AUTH ERROR:::::");
             console.log(e.response);
           }
     }
