@@ -103,11 +103,19 @@ adminsController.pushBanners = async (req, res) => {
     console.log(req.file);
     let optionsObj = {
         path: req.file.path,
-        name: req.file.name
+        name: req.file.originalname
     };
-    let saveOptions = new Options({option_value: optionsObj, type: 'banner'});
+    try{
+        let saveOptions = new Options({option_value: optionsObj, type: 'banner'});
+        let saved = await saveOptions.save();
+        console.log('saved!!!!!!!!!!!!!!!!!!');
+        console.log(saved);
+        res.json({success: true, option: saved._doc})
+    }catch(error){
+        console.log('Error SAVING DATA !!!!!!!!!!!!!!');
+        console.log(error);
+    }
 
-    res.json({success: true, option: saveOptions})
 
 }
 
