@@ -142,6 +142,10 @@ const ClientSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'orders'
     }],
+    favorites: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'products'
+    }]
 }, {
     
     timestamps: true,

@@ -19,10 +19,12 @@ const mongoose = require('mongoose');
 const Bcrypt = require("bcryptjs");
 const adminsController = {};
 const Admins = require('../models/admins');
+const Options = require('../models/options');
 const Config = require('../../config');
 const jwt = require('jsonwebtoken');
 const https = require('axios');
 const { v1 } = require('uuid');
+
 
 
 adminsController.register = async (req, res) => {
@@ -97,6 +99,17 @@ adminsController.verifySID = async (req, res) => {
 
 }
 
+adminsController.pushBanners = async (req, res) => {
+    console.log(req.file);
+    let optionsObj = {
+        path: banner.path,
+        name: banner.name
+    };
+    let saveOptions = new Options({option_value: optionsObj, type: 'banner'});
+
+    res.json({success: true, option: saveOptions})
+
+}
 
 module.exports = adminsController;
 

@@ -19,6 +19,7 @@ const mongoose = require('mongoose');
 const Bcrypt = require("bcryptjs");
 const clientsController = {};
 const Clients = require('../models/clients');
+const Products = require('../models/products');
 const Config = require('../../config');
 const jwt = require('jsonwebtoken');
 const https = require('axios');
@@ -179,6 +180,48 @@ clientsController.editPhonesData = async (req, res) => {
 
 };
 
+clientsController.addFavorite = async (req, res) => {
+    const { userID, productID } = req.body;
+
+    try{
+        var user = await Clients.update(
+            { _id: userID },
+            { $push: { favorites: mongoose.Types.ObjectId(productID) } }
+        ).exec();
+    }catch(err){
+        console.log(err);
+    }
+    try{
+        var product = await Products.update(
+            { _id: productID },
+            { $inc: { favorites: 1 } }
+        ).exec();
+    }catch(error){
+        console.log(error)
+    }
+    
+}
+
+clientsController.getFavorites = async (req, res) => {
+    const { id } = req.query;
+
+    try{
+        var user = await Clients.findById(id).exec();
+        if(user){
+            res.json({
+                success: true,
+                favorites: user.favorites
+            })
+        }else{
+            res.json({
+                success: false
+            })
+        }
+    }catch(err){
+        console.log(err);
+    }
+
+}
 // Redundant Push block start
 
 clientsController.pushEmails = async (req, res) => {
