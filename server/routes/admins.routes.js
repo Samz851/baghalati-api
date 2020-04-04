@@ -38,6 +38,7 @@ router.post('/login', adminsController.login);
 router.post('/sid', adminsController.verifySID);
 router.post('/pushBanner', [cors('*'), upload.single('file')], adminsController.pushBanners);
 router.get('/getBanners', adminsController.getBanners);
+router.get('/deleteBanners', adminsController.deleteBanners);
 
 module.exports = router;
 /** this ends this file
