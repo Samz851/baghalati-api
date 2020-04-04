@@ -34,7 +34,7 @@ const adminsController = require('../controllers/admins.controller');
 router.post('/register', adminsController.register);
 router.post('/login', adminsController.login);
 router.post('/sid', adminsController.verifySID);
-router.post('/pushBanner', upload.single('banner'), adminsController.pushBanners);
+router.post('/pushBanner', upload.single('file'), adminsController.pushBanners);
 
 module.exports = router;
 /** this ends this file
