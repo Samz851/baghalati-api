@@ -34,7 +34,7 @@ const OptionSchema = new Schema({
 });
 
 
-module.exports = mongoose.model('options', AdminSchema);
+module.exports = mongoose.model('options', OptionSchema);
 
 
 
