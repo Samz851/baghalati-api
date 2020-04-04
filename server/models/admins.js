@@ -6,7 +6,7 @@
  *
  *
  *
- * Description: Clients data model
+ * Description: Admin data model
  *
  * Requirements: mongoose
  *

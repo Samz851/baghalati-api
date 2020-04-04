@@ -38,7 +38,10 @@ const productSchema = new Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'categories',
             required: false
-        }
+        },
+        favorites: [{
+            type: Number
+        }]
     },
     {timestamps: true, autoIndex: true}
 );

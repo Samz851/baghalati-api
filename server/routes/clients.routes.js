@@ -32,7 +32,8 @@ router.post('/phone/:id', clientsController.pushPhones);
 router.post('/paymentcard/:id', clientsController.pushPaymentCard);
 router.post('/testhello', (req, res) => {
     res.json({success: true, message: "Hello World from Client Routes"})
-})
+});
+router.post('/addfav', clientsController.addFavorite);
 
 
 router.put('/:id', clientsController.editClientSimpleData);
