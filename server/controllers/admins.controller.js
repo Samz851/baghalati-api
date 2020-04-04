@@ -102,8 +102,8 @@ adminsController.verifySID = async (req, res) => {
 adminsController.pushBanners = async (req, res) => {
     console.log(req.file);
     let optionsObj = {
-        path: file.path,
-        name: file.name
+        path: req.file.path,
+        name: req.file.name
     };
     let saveOptions = new Options({option_value: optionsObj, type: 'banner'});
 
