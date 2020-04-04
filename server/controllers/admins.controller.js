@@ -122,6 +122,16 @@ adminsController.getBanners = async (req, res) => {
     }
 }
 
+adminsController.deleteBanners = async (req, res) => {
+    const { id } = req.query;
+    let op = await Options.findByIdAndDelete(id);
+    if(op){
+        res.json({success: true});
+    }else{
+        res.json({success: false})
+    }
+}
+
 module.exports = adminsController;
 
 /** this ends this file
