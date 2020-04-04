@@ -107,7 +107,7 @@ adminsController.pushBanners = async (req, res) => {
     try{
         let saveOptions = new Options({option_value: optionsObj, type: 'banner'});
         let saved = await saveOptions.save();
-        res.json({success: true, option: saved._doc})
+        res.json({success: true, banners: saved._doc})
     }catch(error){
         console.log(error);
     }
