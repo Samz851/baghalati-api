@@ -100,7 +100,6 @@ adminsController.verifySID = async (req, res) => {
 }
 
 adminsController.pushBanners = async (req, res) => {
-    console.log(req.file);
     let optionsObj = {
         path: req.file.path,
         name: req.file.originalname
@@ -108,15 +107,17 @@ adminsController.pushBanners = async (req, res) => {
     try{
         let saveOptions = new Options({option_value: optionsObj, type: 'banner'});
         let saved = await saveOptions.save();
-        console.log('saved!!!!!!!!!!!!!!!!!!');
-        console.log(saved);
         res.json({success: true, option: saved._doc})
     }catch(error){
-        console.log('Error SAVING DATA !!!!!!!!!!!!!!');
         console.log(error);
     }
+}
 
-
+adminsController.getBanners = async (req, res) => {
+    let banners = await Options.find({type: 'banner'},{sort: {'createdAt': -1}, limit: 3});
+    if(banners){
+        res.json({success: true, banners: banners});
+    }
 }
 
 module.exports = adminsController;
