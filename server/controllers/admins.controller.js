@@ -117,6 +117,8 @@ adminsController.getBanners = async (req, res) => {
     let banners = await Options.find({type: 'banner'},{sort: {'createdAt': -1}, limit: 3});
     if(banners){
         res.json({success: true, banners: banners});
+    }else{
+        res.json({success: false, message: 'Failed to fetch banners'})
     }
 }
 
