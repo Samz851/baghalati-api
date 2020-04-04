@@ -33,7 +33,6 @@ const OptionSchema = new Schema({
     autoIndex: true
 });
 
-OptionSchema.plugin(uniqueValidator);
 
 module.exports = mongoose.model('options', AdminSchema);
 
