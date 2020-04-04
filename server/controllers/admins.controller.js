@@ -114,7 +114,7 @@ adminsController.pushBanners = async (req, res) => {
 }
 
 adminsController.getBanners = async (req, res) => {
-    let banners = await Options.find({type: 'banner'},{sort: {'createdAt': -1}, limit: 3});
+    let banners = await Options.find({type: 'banner'}, null,{sort: {'createdAt': -1}, limit: 3});
     if(banners){
         res.json({success: true, banners: banners});
     }else{
