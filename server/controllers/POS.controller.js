@@ -46,11 +46,11 @@ POSController.authorize = async (req, res) => {
 POSController.redirect = async (req, res) => {
     if(!req.query.error){
         const { code, state } = req.query;
-        const Config = {
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            }
-          }
+        // const Config = {
+        //     headers: {
+        //       'Content-Type': 'application/x-www-form-urlencoded'
+        //     }
+        //   }
 
         let requestB = {
             client_id: client_id,
@@ -60,7 +60,7 @@ POSController.redirect = async (req, res) => {
             grant_type: 'authorization_code'
           }
           try {
-            response = await https.post(tokenURI, requestB, Config);
+            response = await https.post(tokenURI, requestB);
             console.log("HIKEUP AUTH RESPONSE:::::");
             console.log(response)
           } catch (e) {
