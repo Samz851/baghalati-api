@@ -70,7 +70,7 @@ POSController.redirect = async (req, res) => {
             let request = await fetch(tokenURI, { method: 'POST', body: formData}).then((response) => {
               console.log("HIKEUP AUTH RESPONSE:::::");
               console.log(response);
-              serverRes = response.json();
+              serverRes = response.text();
             }).catch((e) => {
               console.log("HIKEUP AUTH ERROR:::::");
               console.log(e);
