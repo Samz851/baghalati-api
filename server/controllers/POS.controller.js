@@ -18,8 +18,6 @@
 
 const POSController = {};
 const https = require('axios');
-var FormData = require('form-data');
-const fetch = require("node-fetch");
 const qs = require('querystring');
 const Admins = require('../models/clients');
 const tokenURI = 'https://api.hikeup.com/oauth/token';
@@ -46,14 +44,13 @@ POSController.authorize = async (req, res) => {
 };
 
 POSController.redirect = async (req, res) => {
-  let serverRes;
     if(!req.query.error){
         const { code, state } = req.query;
-        // const Config = {
-        //     headers: {
-        //       'Content-Type': 'application/x-www-form-urlencoded'
-        //     }
-        //   }
+        const Config = {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
+          }
 
         let requestB = {
             client_id: client_id,
@@ -62,22 +59,15 @@ POSController.redirect = async (req, res) => {
             redirect_uri: redirect_uri,
             grant_type: 'authorization_code'
           }
-          let formData = new FormData();
-          for(var field in requestB) {
-            formData.append(field, requestB[field]);
+          try {
+            response = await https.post(tokenURI, requestB, Config);
+            console.log("HIKEUP AUTH RESPONSE:::::");
+            console.log(response)
+          } catch (e) {
+            console.log("HIKEUP AUTH ERROR:::::");
+            console.log(e.response);
           }
-            // response = await fetch.post(tokenURI, requestB);
-            let request = await fetch(tokenURI, { method: 'POST', body: formData}).then((response) => {
-              console.log("HIKEUP AUTH RESPONSE:::::");
-              console.log(response);
-              serverRes = response.text();
-              console.log(serverRes);
-            }).catch((e) => {
-              console.log("HIKEUP AUTH ERROR:::::");
-              console.log(e);
-            })
-            // let response = await request.json();
-          }
+    }
 }
 
 
