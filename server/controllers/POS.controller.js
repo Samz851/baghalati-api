@@ -46,6 +46,7 @@ POSController.authorize = async (req, res) => {
 };
 
 POSController.redirect = async (req, res) => {
+  let serverRes;
     if(!req.query.error){
         const { code, state } = req.query;
         // const Config = {
@@ -65,15 +66,16 @@ POSController.redirect = async (req, res) => {
           for(var field in requestB) {
             formData.append(field, requestB[field]);
           }
-          try {
             // response = await fetch.post(tokenURI, requestB);
-            let request = await fetch(tokenURI, { method: 'POST', body: formData});
-            let response = await request.json();
-            console.log("HIKEUP AUTH RESPONSE:::::");
-            console.log(response)
-          } catch (e) {
-            console.log("HIKEUP AUTH ERROR:::::");
-            console.log(e.response);
+            let request = await fetch(tokenURI, { method: 'POST', body: formData}).then((response) => {
+              console.log("HIKEUP AUTH RESPONSE:::::");
+              console.log(response);
+              serverRes = response.json();
+            }).catch((e) => {
+              console.log("HIKEUP AUTH ERROR:::::");
+              console.log(e);
+            })
+            // let response = await request.json();
           }
     }
 }
