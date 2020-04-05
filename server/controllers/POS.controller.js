@@ -18,6 +18,7 @@
 
 const POSController = {};
 const https = require('axios');
+var FormData = require('form-data');
 const fetch = require("node-fetch");
 const qs = require('querystring');
 const Admins = require('../models/clients');
