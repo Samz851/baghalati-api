@@ -77,7 +77,6 @@ POSController.redirect = async (req, res) => {
             })
             // let response = await request.json();
           }
-    }
 }
 
 
