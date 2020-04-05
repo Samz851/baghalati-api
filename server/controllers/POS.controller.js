@@ -18,6 +18,7 @@
 
 const POSController = {};
 const https = require('axios');
+const fetch = require("node-fetch");
 const qs = require('querystring');
 const Admins = require('../models/clients');
 const tokenURI = 'https://api.hikeup.com/oauth/token';
@@ -59,8 +60,14 @@ POSController.redirect = async (req, res) => {
             redirect_uri: redirect_uri,
             grant_type: 'authorization_code'
           }
+          let formData = new FormData();
+          for(var field in requestB) {
+            formData.append(field, requestB[field]);
+          }
           try {
-            response = await https.post(tokenURI, requestB);
+            // response = await fetch.post(tokenURI, requestB);
+            let request = await fetch(tokenURI, { method: 'POST', body: formData});
+            let response = await request.json();
             console.log("HIKEUP AUTH RESPONSE:::::");
             console.log(response)
           } catch (e) {
