@@ -71,7 +71,10 @@ POSController.redirect = async (req, res) => {
                 console.log(user);
                 if(user){
                   user.pos_data = {...result.data};
-                  res.json({success: true, message: 'Access Token saved!'});
+                  res.writeHead(301,
+                    {Location: authorizeURI('https://admin.jubnawebaith.com/dashboard?synched=true')}
+                  );
+                  res.end();
                 }else{
                   res.json({success: false, message: 'Failed to save user access token', error:err});
                 }
