@@ -47,6 +47,8 @@ POSController.redirect = async (req, res) => {
     if(!req.query.error){
         const { code, state } = req.query;
         console.log(`CODE: ${code}`);
+        console.log(`STATE: ${state}`);
+
          let requestB = {
             client_id: client_id,
             client_secret: client_secret,
@@ -65,14 +67,16 @@ POSController.redirect = async (req, res) => {
           .then(async (result) => {
             // Do somthing
             if(result.data){
-              let user = await Admins.findOne({session_id: state}).exec();
-              console.log(user);
-              if(user){
-                user.pos_data = {...result.data};
-                res.json({success: true, message: 'Access Token saved!'});
-              }else{
-                res.json({success: false, message: 'Failed to save user access token'});
-              }
+              Admins.findOne({session_id: state}, function(err, user){
+                console.log(user);
+                if(user){
+                  user.pos_data = {...result.data};
+                  res.json({success: true, message: 'Access Token saved!'});
+                }else{
+                  res.json({success: false, message: 'Failed to save user access token', error:err});
+                }
+              });
+
               // try{
               //   let save = await user.save();
 
