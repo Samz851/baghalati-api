@@ -64,8 +64,19 @@ POSController.redirect = async (req, res) => {
         https.post(tokenURI, qs.stringify(requestB), config)
           .then((result) => {
             // Do somthing
+            if(result.data){
+              let user = await Admins.findById(code);
+              user.pos_data = {...result.data};
+              try{
+                let save = await user.save();
+
+              }catch(err){
+                console.log('saving access token error');
+                console.log(err);
+              }
+            }
             console.log("HIKEUP AUTH RESPONSE:::::");
-            console.log(result)
+            console.log(result.data)
           })
           .catch((err) => {
             // Do somthing
