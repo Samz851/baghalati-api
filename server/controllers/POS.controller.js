@@ -65,7 +65,7 @@ POSController.redirect = async (req, res) => {
           .then(async (result) => {
             // Do somthing
             if(result.data){
-              let user = await Admins.findById(state);
+              let user = await Admins.findOne({session_id: state}).exec();
               user.pos_data = {...result.data};
               try{
                 let save = await user.save();
