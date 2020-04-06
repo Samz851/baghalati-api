@@ -46,34 +46,35 @@ POSController.authorize = async (req, res) => {
 POSController.redirect = async (req, res) => {
     if(!req.query.error){
         const { code, state } = req.query;
-        const Config = {
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            }
-          }
+        console.log(`CODE: ${code}`);
+        // const Config = {
+        //     headers: {
+        //       'Content-Type': 'application/x-www-form-urlencoded'
+        //     }
+        //   }
 
-        let requestB = {
-            client_id: client_id,
-            client_secret: client_secret,
-            code: code,
-            redirect_uri: redirect_uri,
-            grant_type: 'authorization_code'
-          }
-          try {
-            response = await https({
-              url: tokenURI,
-              method: 'post',
-              headers: {
-                "content-type": "application/x-www-form-urlencoded"
-              },
-              params: {...requestB}
-            });
-            console.log("HIKEUP AUTH RESPONSE:::::");
-            console.log(response.body)
-          } catch (e) {
-            console.log("HIKEUP AUTH ERROR:::::");
-            console.log(e.response);
-          }
+        // let requestB = {
+        //     client_id: client_id,
+        //     client_secret: client_secret,
+        //     code: code,
+        //     redirect_uri: redirect_uri,
+        //     grant_type: 'authorization_code'
+        //   }
+        //   try {
+        //     response = await https({
+        //       url: tokenURI,
+        //       method: 'post',
+        //       headers: {
+        //         "content-type": "application/x-www-form-urlencoded"
+        //       },
+        //       params: {...requestB}
+        //     });
+        //     console.log("HIKEUP AUTH RESPONSE:::::");
+        //     console.log(response.body)
+        //   } catch (e) {
+        //     console.log("HIKEUP AUTH ERROR:::::");
+        //     console.log(e.response);
+        //   }
     }
 }
 
