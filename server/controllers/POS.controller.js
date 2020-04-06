@@ -61,7 +61,7 @@ POSController.redirect = async (req, res) => {
           }
         }
         
-        axios.post(tokenURI, qs.stringify(requestB), config)
+        https.post(tokenURI, qs.stringify(requestB), config)
           .then((result) => {
             // Do somthing
             console.log("HIKEUP AUTH RESPONSE:::::");
