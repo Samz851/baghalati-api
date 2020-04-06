@@ -17,6 +17,7 @@
 */
 
 const POSController = {};
+const fs = require('fs')
 const https = require('axios');
 const qs = require('querystring');
 const Admins = require('../models/clients');
@@ -61,8 +62,9 @@ POSController.redirect = async (req, res) => {
           }
           try {
             response = await https.post(tokenURI, requestB, Config);
+            fs.writeFileSync('/hikeup-response.json', JSON.stringify(response))
             console.log("HIKEUP AUTH RESPONSE:::::");
-            console.log(response)
+            console.log(response.body)
           } catch (e) {
             console.log("HIKEUP AUTH ERROR:::::");
             console.log(e.response);
