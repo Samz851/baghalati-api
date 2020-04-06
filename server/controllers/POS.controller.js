@@ -19,7 +19,7 @@
 const POSController = {};
 const https = require('axios');
 const qs = require('querystring');
-const Admins = require('../models/clients');
+const Admins = require('../models/admins');
 const tokenURI = 'https://api.hikeup.com/oauth/token';
 const authURI = 'https://api.hikeup.com/oauth/authorize';
 const client_id =  'baghalati-1be96a0e45';
@@ -76,52 +76,13 @@ POSController.redirect = async (req, res) => {
                   res.json({success: false, message: 'Failed to save user access token', error:err});
                 }
               });
-
-              // try{
-              //   let save = await user.save();
-
-              // }catch(err){
-              //   console.log('saving access token error');
-              //   console.log(err);
-              // }
             }
-            // console.log("HIKEUP AUTH RESPONSE:::::");
-            // console.log(result.data)
           })
           .catch((err) => {
             // Do somthing
             console.log("HIKEUP AUTH ERROR:::::");
             console.log(err);
           })
-
-
-
-
-
-
-
-        // const Config = {
-        //     headers: {
-        //       'Content-Type': 'application/x-www-form-urlencoded'
-        //     }
-        //   }
-
-
-        //   try {
-        //     response = await https({
-        //       url: tokenURI,
-        //       method: 'post',
-        //       headers: {
-        //         "content-type": "application/x-www-form-urlencoded"
-        //       },
-        //       params: {...requestB}
-        //     });
-        //     console.log("HIKEUP AUTH RESPONSE:::::");
-        //     console.log(response.body)
-        //   } catch (e) {
-        //     console.log("HIKEUP AUTH ERROR:::::");
-        //     console.log(e.response);
-        //   }
     }
 }
 
