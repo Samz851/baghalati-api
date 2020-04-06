@@ -66,17 +66,23 @@ POSController.redirect = async (req, res) => {
             // Do somthing
             if(result.data){
               let user = await Admins.findOne({session_id: state}).exec();
-              user.pos_data = {...result.data};
-              try{
-                let save = await user.save();
-
-              }catch(err){
-                console.log('saving access token error');
-                console.log(err);
+              console.log(user);
+              if(user){
+                user.pos_data = {...result.data};
+                res.json({success: true, message: 'Access Token saved!'});
+              }else{
+                res.json({success: false, message: 'Failed to save user access token'});
               }
+              // try{
+              //   let save = await user.save();
+
+              // }catch(err){
+              //   console.log('saving access token error');
+              //   console.log(err);
+              // }
             }
-            console.log("HIKEUP AUTH RESPONSE:::::");
-            console.log(result.data)
+            // console.log("HIKEUP AUTH RESPONSE:::::");
+            // console.log(result.data)
           })
           .catch((err) => {
             // Do somthing
