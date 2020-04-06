@@ -62,10 +62,10 @@ POSController.redirect = async (req, res) => {
         }
         
         https.post(tokenURI, qs.stringify(requestB), config)
-          .then((result) => {
+          .then(async (result) => {
             // Do somthing
             if(result.data){
-              let user = await Admins.findById(code);
+              let user = await Admins.findById(state);
               user.pos_data = {...result.data};
               try{
                 let save = await user.save();
