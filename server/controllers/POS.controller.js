@@ -71,8 +71,9 @@ POSController.redirect = async (req, res) => {
                 console.log(user);
                 if(user){
                   user.pos_data = {...result.data};
+                  user.save();
                   res.writeHead(301,
-                    {Location: authorizeURI('https://admin.jubnawebaith.com/dashboard?synched=true')}
+                    {Location: 'https://admin.jubnawebaith.com/dashboard?synched=true'}
                   );
                   res.end();
                 }else{
