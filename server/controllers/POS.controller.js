@@ -17,7 +17,6 @@
 */
 
 const POSController = {};
-const fs = require('fs')
 const https = require('axios');
 const qs = require('querystring');
 const Admins = require('../models/clients');
@@ -61,8 +60,14 @@ POSController.redirect = async (req, res) => {
             grant_type: 'authorization_code'
           }
           try {
-            response = await https.post(tokenURI, requestB, Config);
-            fs.writeFileSync('/hikeup-response.json', JSON.stringify(response))
+            response = await https({
+              url: tokenURI,
+              method: 'post',
+              headers: {
+                "content-type": "application/x-www-form-urlencoded"
+              },
+              params: {...requestB}
+            });
             console.log("HIKEUP AUTH RESPONSE:::::");
             console.log(response.body)
           } catch (e) {
