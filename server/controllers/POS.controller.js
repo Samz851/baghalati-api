@@ -47,19 +47,45 @@ POSController.redirect = async (req, res) => {
     if(!req.query.error){
         const { code, state } = req.query;
         console.log(`CODE: ${code}`);
+         let requestB = {
+            client_id: client_id,
+            client_secret: client_secret,
+            code: code,
+            redirect_uri: redirect_uri,
+            grant_type: 'authorization_code'
+          }
+        
+        const config = {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+        
+        axios.post(tokenURI, qs.stringify(requestB), config)
+          .then((result) => {
+            // Do somthing
+            console.log("HIKEUP AUTH RESPONSE:::::");
+            console.log(response.body)
+          })
+          .catch((err) => {
+            // Do somthing
+            console.log("HIKEUP AUTH ERROR:::::");
+            console.log(e.response);
+          })
+
+
+
+
+
+
+
         // const Config = {
         //     headers: {
         //       'Content-Type': 'application/x-www-form-urlencoded'
         //     }
         //   }
 
-        // let requestB = {
-        //     client_id: client_id,
-        //     client_secret: client_secret,
-        //     code: code,
-        //     redirect_uri: redirect_uri,
-        //     grant_type: 'authorization_code'
-        //   }
+
         //   try {
         //     response = await https({
         //       url: tokenURI,
