@@ -57,7 +57,7 @@ POSController.redirect = async (req, res) => {
         
         const config = {
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'content-type': 'application/x-www-form-urlencoded'
           }
         }
         
@@ -65,12 +65,12 @@ POSController.redirect = async (req, res) => {
           .then((result) => {
             // Do somthing
             console.log("HIKEUP AUTH RESPONSE:::::");
-            console.log(response.body)
+            console.log(result)
           })
           .catch((err) => {
             // Do somthing
             console.log("HIKEUP AUTH ERROR:::::");
-            console.log(e.response);
+            console.log(err);
           })
 
 
