@@ -67,6 +67,10 @@ const AdminSchema = new Schema({
         refresh_token: {
             type: String
         }
+    },
+    is_connected: {
+        type: Boolean,
+        default: 'false'
     }
 }, {
     
