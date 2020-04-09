@@ -143,18 +143,55 @@ POSController.getProducts = async (req, res) => {
       }
     }
 
-    // let query = {
-    //   page_size: 20,
-    //   Skip_count: page == 0 ? 0 : page * 20 - 1
-    // }
-
     try {
       let products = await https.get(get_products_uri, config);
       console.log('Products result!!!!!!!!!!');
-      console.log(products.data);
+      console.log(products.response.data);
+      res.json({
+        success: true,
+        result: products.response.data
+      });
     }catch(err){
       console.log("products Error!!!!");
-      console.log(err.response.data);
+      console.log(err.response.data.unAuthorizedRequest);
+      if(err.response.data.unAuthorizedRequest){
+        // Refresh token
+        let requestB = {
+          client_id: client_id,
+          client_secret: client_secret,
+          refresh_token: user.pos_data.refresh_token,
+          grant_type: 'refresh_token'
+        }
+  
+        const tokenConfig = {
+          headers: {
+            'content-type': 'application/x-www-form-urlencoded'
+          }
+        }
+
+        try{
+          let refresh = await https.post(tokenURI, qs.stringify(requestB), tokenConfig);
+          user.pos_data = refresh.data;
+          user.save();
+
+          //try fetching again
+
+          try{
+            let products = await https.get(get_products_uri, config);
+            if(products){
+              res.json({
+                success: true,
+                result: products.response.data
+              })
+            }
+          }catch(error){
+            throw error;
+          }
+
+        }catch(err){
+          throw err;
+        }
+      }
     }
     
   }
