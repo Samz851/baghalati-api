@@ -20,8 +20,10 @@ const router = express.Router();
 const POSController = require('../controllers/POS.controller');
 
 
-router.get('/hikeup-authorize', POSController.authorize )
+router.get('/hikeup-authorize', POSController.authorize );
 router.get('/hikeup-redirect', POSController.redirect );
+router.get('/refreshToken', POSController.refreshToken);
+router.get('/getProducts', POSController.getProducts);
 
 
 module.exports = router;

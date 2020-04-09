@@ -62,7 +62,7 @@ adminsController.login = async (req, res) => {
             user.session_id = v1();
             let success = await user.save();
             if(success){
-                res.json({success: true, session: user.session_id});
+                res.json({success: true, session: user.session_id, store_status: user.is_connected});
             }else{
                 res.json({success: false, message: 'Failed to generate session token'})
             }
