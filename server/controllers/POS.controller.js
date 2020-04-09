@@ -149,7 +149,7 @@ POSController.getProducts = async (req, res) => {
       // console.log(products.response.data);
       res.json({
         success: true,
-        result: products.response.data
+        result: products
       });
     }catch(err){
       console.log("products Error!!!!");
