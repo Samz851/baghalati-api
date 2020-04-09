@@ -151,10 +151,10 @@ POSController.getProducts = async (req, res) => {
     try {
       let products = await https.get(get_products_uri, config);
       console.log('Products result!!!!!!!!!!');
-      console.log(products);
+      console.log(products.data);
     }catch(err){
       console.log("products Error!!!!");
-      console.log(err);
+      console.log(err.data);
     }
     
   }
