@@ -143,16 +143,16 @@ POSController.getProducts = async (req, res) => {
       page_size: 20,
       Skip_count: page == 0 ? 0 : page * 20 - 1
     }
-    
-  }
 
-  try {
-    let products = await https.get(get_products_uri, qs.stringify(query), config);
-    console.log('Products result!!!!!!!!!!');
-    console.log(products);
-  }catch(err){
-    console.log("products Error!!!!");
-    console.log(err);
+    try {
+      let products = await https.get(get_products_uri, qs.stringify(query), config);
+      console.log('Products result!!!!!!!!!!');
+      console.log(products);
+    }catch(err){
+      console.log("products Error!!!!");
+      console.log(err);
+    }
+    
   }
 
 }
