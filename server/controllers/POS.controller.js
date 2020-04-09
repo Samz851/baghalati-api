@@ -185,11 +185,13 @@ POSController.getProducts = async (req, res) => {
               })
             }
           }catch(error){
-            throw error;
+            console.log('Try refetch products ERROR!!!!!')
+            console.log(JSON.stringify(error));
           }
 
         }catch(err){
-          throw err;
+          console.log('Try refresh token ERROR!!!!!')
+          console.log(JSON.stringify(err));
         }
       }
     }
