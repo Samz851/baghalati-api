@@ -153,47 +153,47 @@ POSController.getProducts = async (req, res) => {
       });
     }catch(err){
       console.log("products Error!!!!");
-      console.log(err.response.data.unAuthorizedRequest);
-      if(err.response.data.unAuthorizedRequest){
-        // Refresh token
-        let requestB = {
-          client_id: client_id,
-          client_secret: client_secret,
-          refresh_token: user.pos_data.refresh_token,
-          grant_type: 'refresh_token'
-        }
+      console.log(err);
+      // if(err.response.data.unAuthorizedRequest){
+      //   // Refresh token
+      //   let requestB = {
+      //     client_id: client_id,
+      //     client_secret: client_secret,
+      //     refresh_token: user.pos_data.refresh_token,
+      //     grant_type: 'refresh_token'
+      //   }
   
-        const tokenConfig = {
-          headers: {
-            'content-type': 'application/x-www-form-urlencoded'
-          }
-        }
+      //   const tokenConfig = {
+      //     headers: {
+      //       'content-type': 'application/x-www-form-urlencoded'
+      //     }
+      //   }
 
-        try{
-          let refresh = await https.post(tokenURI, qs.stringify(requestB), tokenConfig);
-          user.pos_data = refresh.data;
-          user.save();
+      //   try{
+      //     let refresh = await https.post(tokenURI, qs.stringify(requestB), tokenConfig);
+      //     user.pos_data = refresh.data;
+      //     user.save();
 
-          //try fetching again
+      //     //try fetching again
 
-          try{
-            let products = await https.get(get_products_uri, config);
-            if(products){
-              res.json({
-                success: true,
-                result: products.response.data
-              })
-            }
-          }catch(error){
-            console.log('Try refetch products ERROR!!!!!')
-            console.log(JSON.stringify(error));
-          }
+      //     try{
+      //       let products = await https.get(get_products_uri, config);
+      //       if(products){
+      //         res.json({
+      //           success: true,
+      //           result: products.response.data
+      //         })
+      //       }
+      //     }catch(error){
+      //       console.log('Try refetch products ERROR!!!!!')
+      //       console.log(JSON.stringify(error));
+      //     }
 
-        }catch(err){
-          console.log('Try refresh token ERROR!!!!!')
-          console.log(JSON.stringify(err));
-        }
-      }
+      //   }catch(err){
+      //     console.log('Try refresh token ERROR!!!!!')
+      //     console.log(JSON.stringify(err));
+      //   }
+      // }
     }
     
   }
