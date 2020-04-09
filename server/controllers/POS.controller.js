@@ -145,8 +145,9 @@ POSController.getProducts = async (req, res) => {
 
     try {
       let products = await https.get(get_products_uri, config);
+      let results = products.json();
       console.log('Products result!!!!!!!!!!');
-      console.log(products);
+      console.log(results);
       // res.json({
       //   success: true,
       //   result: products
