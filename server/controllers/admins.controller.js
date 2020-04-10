@@ -132,6 +132,22 @@ adminsController.deleteBanners = async (req, res) => {
     }
 }
 
+adminsController.getDeliveryFee = async (req, res) => {
+
+}
+ 
+adminsController.updateDeliveryFee = async (req, res) => {
+    const { fee } = req.query;
+    try{
+        let saveOptions = new Options({option_value: fee, type: 'delivery_fee'});
+        let saved = await saveOptions.save();
+        res.json({success: true, option: saved._doc})
+    }catch(error){
+        console.log(error);
+    }
+
+}
+
 module.exports = adminsController;
 
 /** this ends this file
