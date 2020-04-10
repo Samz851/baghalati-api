@@ -137,7 +137,7 @@ adminsController.getDeliveryFee = async (req, res) => {
 }
  
 adminsController.updateDeliveryFee = async (req, res) => {
-    const { fee } = req.query;
+    const { fee } = req.body;
     try{
         let saveOptions = new Options({option_value: fee, type: 'delivery_fee'});
         let saved = await saveOptions.save();
