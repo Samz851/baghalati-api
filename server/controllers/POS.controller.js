@@ -136,15 +136,14 @@ POSController.getProducts = async (req, res) => {
     const config = {
       headers: {
         'Authorization': 'Bearer ' + user.pos_data.access_token
-      },
-      params: {
-        page_size: 20,
-        Skip_count: page == 0 ? 0 : page * 20 - 1
-      }
+      } 
     }
 
     try {
-      let products = await https.get(get_products_uri, config);
+      let products = await https.get(get_products_uri, qs.stringify({
+        page_size: 20,
+        Skip_count: page == 0 ? 0 : page * 20 - 1
+      }), config);
       let results = products.json();
       console.log('Products result!!!!!!!!!!');
       res.json({
