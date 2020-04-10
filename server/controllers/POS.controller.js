@@ -151,7 +151,8 @@ POSController.getProducts = async (req, res) => {
         res.json({
           success: true,
           result: products.data.items,
-          next: products.data.next
+          next: products.data.next,
+          total: products.data.totalCount
         });
       }
 
