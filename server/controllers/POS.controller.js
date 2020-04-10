@@ -145,55 +145,18 @@ POSController.getProducts = async (req, res) => {
 
     try {
       let products = await https.get(get_products_uri, config);
+      let results = products.json();
       console.log('Products result!!!!!!!!!!');
-      console.log(products);
-      // res.json({
-      //   success: true,
-      //   result: products
-      // });
+      res.json({
+        success: true,
+        result: results
+      });
     }catch(err){
       console.log("products Error!!!!");
-      console.log(err);
-      // if(err.response.data.unAuthorizedRequest){
-      //   // Refresh token
-      //   let requestB = {
-      //     client_id: client_id,
-      //     client_secret: client_secret,
-      //     refresh_token: user.pos_data.refresh_token,
-      //     grant_type: 'refresh_token'
-      //   }
-  
-      //   const tokenConfig = {
-      //     headers: {
-      //       'content-type': 'application/x-www-form-urlencoded'
-      //     }
-      //   }
-
-      //   try{
-      //     let refresh = await https.post(tokenURI, qs.stringify(requestB), tokenConfig);
-      //     user.pos_data = refresh.data;
-      //     user.save();
-
-      //     //try fetching again
-
-      //     try{
-      //       let products = await https.get(get_products_uri, config);
-      //       if(products){
-      //         res.json({
-      //           success: true,
-      //           result: products.response.data
-      //         })
-      //       }
-      //     }catch(error){
-      //       console.log('Try refetch products ERROR!!!!!')
-      //       console.log(JSON.stringify(error));
-      //     }
-
-      //   }catch(err){
-      //     console.log('Try refresh token ERROR!!!!!')
-      //     console.log(JSON.stringify(err));
-      //   }
-      // }
+      res.json({
+        success: false,
+        error: err
+      })
     }
     
   }
