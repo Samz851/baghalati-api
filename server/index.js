@@ -39,6 +39,9 @@ app.set('port', process.env.PORT || 3210);
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(cors({origin: '*'}));
+app.use(bodyParser.urlencoded({
+    extended: true
+  }));
 app.use('/uploads', express.static(__dirname + '/uploads'));
 
 
