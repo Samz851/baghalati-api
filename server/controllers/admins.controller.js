@@ -142,6 +142,8 @@ adminsController.getDeliveryFee = async (req, res) => {
 }
  
 adminsController.updateDeliveryFee = async (req, res) => {
+    console.log('REQ BODY!!!');
+    console.log(req.body)
     const { id, fee } = req.body;
     console.log('GOT A HIT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!' + id);
     try{
