@@ -144,7 +144,7 @@ POSController.getProducts = async (req, res) => {
     }
 
     try {
-      let products = await https.get(get_products_uri + '?page_size=' + params.page_size + 'Skip_count=' + params.Skip_count, config);
+      let products = await https.get(get_products_uri + '?page_size=' + params.page_size + '&Skip_count=' + params.Skip_count, config);
       let results = products.json();
       console.log('Products result!!!!!!!!!!');
       res.json({
