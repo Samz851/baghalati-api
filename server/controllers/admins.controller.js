@@ -133,18 +133,23 @@ adminsController.deleteBanners = async (req, res) => {
 }
 
 adminsController.getDeliveryFee = async (req, res) => {
-
+    try{
+        let option = await Options.findOne({type: 'delivery_fee'});
+        res.json({success: true, option: option});
+    }catch(error){
+        res.json({success: false, error: error});
+    }
 }
  
 adminsController.updateDeliveryFee = async (req, res) => {
-    const { fee } = req.body;
+    const { id, fee } = req.body;
     console.log('GOT A HIT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
     try{
-        let saveOptions = new Options({option_value: fee, type: 'delivery_fee'});
-        let saved = await saveOptions.save();
-        res.json({success: true, option: saved._doc})
+        let saveOptions = await Options.findOneAndUpdate({_id: id}, {option_value: fee});
+        res.json({success: true})
     }catch(error){
         console.log(error);
+        res.json({success: false, error: error})
     }
 
 }
