@@ -145,7 +145,7 @@ adminsController.updateDeliveryFee = async (req, res) => {
     const { id, fee } = req.body;
     console.log('GOT A HIT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
     try{
-        let saveOptions = await Options.findOneAndUpdate({_id: id}, {option_value: fee});
+        let saveOptions = await Options.findOneAndUpdate({_id: id}, {option_value: fee}).exec();
         res.json({success: true})
     }catch(error){
         console.log(error);
