@@ -19,6 +19,7 @@ const morgan = require('morgan');
 const app = express();
 const cors = require('cors');
 const POS = require('./pos');
+var bodyParser = require('body-parser');
 
 const { mongoose } = require('./database');
 
