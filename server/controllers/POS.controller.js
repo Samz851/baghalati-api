@@ -186,7 +186,9 @@ POSController.syncTags = async (req, res) => {
 }
 
 POSController.syncInventory = async (req, res) => {
+  console.log(req.body);
   const { id, override, password } = req.body;
+  console.log(`Session id: ${id}`);
   let user = await Admins.findOne({session_id: id});
   console.log(user);
   if(Bcrypt.compareSync(password, user.password)){
