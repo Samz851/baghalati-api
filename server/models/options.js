@@ -1,5 +1,5 @@
 /**
- * Name: clients
+ * Name: options
  *
  * @author Samer Alotaibi
  *		  sam@samiscoding.com
@@ -39,7 +39,7 @@ module.exports = mongoose.model('options', OptionSchema);
 
 
 /** this ends this file
- * server/models/clients
+ * server/models/options
  **/
 
  
