@@ -19,6 +19,7 @@
 const POSController = {};
 const https = require('axios');
 const qs = require('querystring');
+const Bcrypt = require("bcryptjs");
 const Admins = require('../models/admins');
 const Products = require('../models/products');
 const Categories = require('../models/categories');
@@ -187,7 +188,7 @@ POSController.syncTags = async (req, res) => {
 POSController.syncInventory = async (req, res) => {
   const { id, override, password } = req.body;
   let user = await Admins.findOne({session_id: id, password: password}, 'pos_data');
-  if(user){
+  if(Bcrypt.compareSync(password, user.password)){
     if(override) {
       await Products.deleteMany({});
       await Categories.deleteMany({});
