@@ -215,11 +215,11 @@ POSController.syncInventory = async (req, res) => {
         });
       }else{
         console.log('No Categories retrieved');
-        res.json({success: false});
+        res.json({success: false, line: 218});
       }
     }catch(error){
       console.log('Error fetching Categories');
-      res.json({success: false});
+      res.json({success: false, line: 222});
     }
     let results = [];
     async function getProducts(parameters){
@@ -308,11 +308,11 @@ POSController.syncInventory = async (req, res) => {
     }catch(error){
       console.log('Error fetching products');
       console.log(error);
-      res.json({success: false});
+      res.json({success: false, line: 311});
     }
 
   }else{
-    res.json({success: false})
+    res.json({success: false, line: 315})
   }
 
   //fetch products
