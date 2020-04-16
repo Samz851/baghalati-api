@@ -24,7 +24,7 @@ router.get('/hikeup-authorize', POSController.authorize );
 router.get('/hikeup-redirect', POSController.redirect );
 router.get('/refreshToken', POSController.refreshToken);
 router.get('/getProducts', POSController.getProducts);
-
+router.post('/syncPOS', POSController.syncInventory);
 
 module.exports = router;
 /** this ends this file

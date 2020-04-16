@@ -20,28 +20,38 @@ const { Schema }  = mongoose;
 
 const productSchema = new Schema(
     {
-        code: {type: String, required: true, unique: true},
-        description: { type: String, required: true },
-        size: { type: String, required: true },
-        weight: { type: String, required: true },
-        price: { type: Number, required: true },
-        discount: { type: Number, required: true },
-        on_sale: { type: Boolean, default: false },
-        active: { type: Boolean, default:false },
-        stock: { type: Number, required: true },
-        broken_stock: { type: Number, required: false },
-        to_serve: { type: Number, required: false },
-        to_receive: { type: Number, required: false },
-        ubication: { type: String, required: false },
-        images: [{ image: String }],
-        category: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'categories',
-            required: false
+        parentId:{type: String},
+        name:{type: String, required: true},
+        description:{type: String, required: true},
+        sku:{ type: Number, required: true },
+        primary_image:{type: String},
+        bran_name:{type: String, required: true},
+        supplier_code:{type: String},
+        sales_code:{type: String},
+        purchase_code:{type: String},
+        product_tags:[
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'tags',
+                required: false
+            }
+        ],
+        product_type:[
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'categories',
+                required: false
+            }
+        ],
+        price: { 
+            price_ex_tax: {type: mongoose.Schema.Types.Decimal128, required: true},
+            tax_rate:{type: mongoose.Schema.Types.Decimal128, required: true},
+            price_inc_tax:{type: mongoose.Schema.Types.Decimal128, required: true},
         },
-        favorites: [{
+        isActive:{type: Boolean},
+        favorites: {
             type: Number
-        }]
+        }
     },
     {timestamps: true, autoIndex: true}
 );

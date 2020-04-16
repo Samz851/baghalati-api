@@ -1,11 +1,11 @@
 /**
-* Name: products
+* Name: categories
 *
 * @author Samer Alotaibi
 *		  sam@samiscoding.com
 *
 *
-* Description: Product data model
+* Description: Categories data model
 *
 * Requirements: mongoose
 *
@@ -20,20 +20,12 @@ const { Schema }  = mongoose;
 
 const categorySchema = new Schema(
     {
-        name: {
-			type: String,
-			unique: true,
-			required: true,
-		},
-		description:{
-			type: String,
-			required: true,
-		},
-		products: [{
-			type: mongoose.Schema.Types.ObjectId,
-			ref: 'products',
-			unique: true,
-		}]
+		name: { type: String, unique: true, required: true },
+		name_ar: { type: String, unique: true },
+		description: { type: String },
+		description_ar: { type: String},
+		isActive: { type: Boolean },
+		id: { type: Number }
     },
     {timestamps: true, autoIndex: true}
 );
