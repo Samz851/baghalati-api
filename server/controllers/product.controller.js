@@ -20,9 +20,21 @@ const productController = {};
 const Product = require('../models/products');
 
 productController.getProducts = async (req, res) => {
-    const products = await Product.find();
+    const { page, offset } = req.query;
+    console.log(`page is: ${page} and offset: ${offset}`)
+    let config = { limit: 20, skip: parseInt(offset) };
+    try{
+        let count = await Product.count({});
+        try{
+            let products = await Product.find({}, null, config);
+            res.json({success: true, result: products, total: count});
+        }catch(error){
+            console.log(error);
+        }
+    }catch(error){
+        console.log(error);
+    }
 
-    res.json(products);
 };
 
 productController.getCount = async (req, res) => {
