@@ -21,6 +21,7 @@ const router = express.Router();
 const productsController = require('../controllers/product.controller');
 
 router.get('/', productsController.getProducts);
+router.get('/getTags', productsController.getTags);
 router.get('/count', productsController.getCount);
 router.get('/actives', productsController.getActives);
 router.get('/actives/count', productsController.getActivesCount);
@@ -30,6 +31,7 @@ router.get('/brokenstock', productsController.brokenStock);
 router.get('/:id', productsController.getProduct);
 router.get('/activate/:id', productsController.activateProduct);
 router.get('/deactivate/:id', productsController.deactivateProduct);
+router.post('/arabizeTags', productsController.arabizeTags);
 
 router.put('/:id', productsController.editProduct);
 /*
