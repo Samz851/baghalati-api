@@ -18,6 +18,8 @@
 
 const productController = {};
 const Product = require('../models/products');
+const Tags = require('../models/tags');
+const Categories = require('../models/categories');
 
 productController.getProducts = async (req, res) => {
     const { page, offset } = req.query;
@@ -36,6 +38,36 @@ productController.getProducts = async (req, res) => {
     }
 
 };
+
+productController.getTags = async (req, res) => {
+    let tags = await Tags.find({});
+    if(tags){
+        res.json({success: true, categories: tags});
+    }else{
+        res.json({success: false})
+    }
+}
+productController.arabizeTags = async (req, res) => {
+    const { array } = req.body;
+    console.log(typeof req.body.array);
+    for (var item in array){
+        // console.log(`Key: ${item} and Value: ${array[item]}`);
+        try{
+            let tag = await Categories.findOne({ name: item });
+            if(tag){
+                tag.name_ar = array[item];
+                await tag.save();
+            } 
+        }catch(error){
+            console.log(`Error item: ${item} and value is: ${array[item]}`)
+            throw error;
+        }
+    }
+    // array.forEach( async ( key, value ) => {
+
+
+    // });
+}
 
 productController.getCount = async (req, res) => {
     const count = await Product.countDocuments();
