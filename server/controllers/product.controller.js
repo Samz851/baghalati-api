@@ -52,7 +52,11 @@ productController.setTagImages = async (req, res) => {
     let tags = await Tags.find({});
     tags.forEach( async ( item ) => {
         item.img = 'https://api.baghalati.com/uploads/categories/' + item.name.replace(/ /g, '-') + '.png';
-        await item.save();
+        try{
+            await item.save();
+        }catch(error){
+            throw error;
+        }
     });
     res.json({success: true})
 }
