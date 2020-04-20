@@ -50,15 +50,15 @@ productController.getTags = async (req, res) => {
 
 productController.setTagImages = async (req, res) => {
     let tags = await Tags.find({});
-    tags.forEach( async ( item ) => {
+    tags.forEach(( item ) => {
         item.img = 'https://api.baghalati.com/uploads/categories/' + item.name.replace(/ /g, '-') + '.png';
-        try{
-            await item.save();
-        }catch(error){
-            throw error;
-        }
+        // try{
+        //     // await item.save();
+        // }catch(error){
+        //     throw error;
+        // }
     });
-    res.json({success: true})
+    res.json({success: true, items: tags})
 }
 productController.arabizeTags = async (req, res) => {
     const { array } = req.body;
