@@ -21,7 +21,8 @@ const { Schema }  = mongoose;
 const tagSchema = new Schema(
     {
         name: { type:String, required: true },
-        name_ar: { type: String }
+        name_ar: { type: String },
+        img: { type: String }
     }
 );
 
