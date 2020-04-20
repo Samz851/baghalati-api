@@ -42,21 +42,15 @@ productController.getProducts = async (req, res) => {
 productController.getTags = async (req, res) => {
     let tags = await Tags.find({});
     if(tags){
+        tags.forEach(( item ) => {
+            item.img = 'https://api.baghalati.com/uploads/categories/' + item.name.replace(/ /g, '-') + '.png';
+        });
         res.json({success: true, categories: tags});
     }else{
         res.json({success: false})
     }
 }
 
-productController.setTagImages = async (req, res) => {
-    console.log("We're HERE!!!!!!!!!!!!!!!!!!!")
-    let tags = await Tags.find({});
-    tags.forEach(( item ) => {
-        item.img = 'https://api.baghalati.com/uploads/categories/' + item.name.replace(/ /g, '-') + '.png';
-
-    });
-    res.json({success: true, items: tags})
-}
 productController.arabizeTags = async (req, res) => {
     const { array } = req.body;
     console.log(typeof req.body.array);
