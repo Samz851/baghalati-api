@@ -32,7 +32,6 @@ router.get('/:id', productsController.getProduct);
 router.get('/activate/:id', productsController.activateProduct);
 router.get('/deactivate/:id', productsController.deactivateProduct);
 router.post('/arabizeTags', productsController.arabizeTags);
-router.post('/setTagImages', productsController.setTagImages);
 
 router.put('/:id', productsController.editProduct);
 /*
