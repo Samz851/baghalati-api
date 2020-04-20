@@ -22,6 +22,7 @@ const Tags = require('../models/tags');
 const Categories = require('../models/categories');
 
 productController.getProducts = async (req, res) => {
+    console.log('HERE!!!!!');
     const { page, offset } = req.query;
     console.log(`page is: ${page} and offset: ${offset}`)
     let config = { limit: 20, skip: parseInt(offset) };
