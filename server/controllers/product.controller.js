@@ -22,7 +22,6 @@ const Tags = require('../models/tags');
 const Categories = require('../models/categories');
 
 productController.getProducts = async (req, res) => {
-    console.log('HERE!!!!!');
     const { page, offset } = req.query;
     console.log(`page is: ${page} and offset: ${offset}`)
     let config = { limit: 20, skip: parseInt(offset) };
@@ -51,12 +50,12 @@ productController.getTags = async (req, res) => {
 
 productController.setTagImages = async (req, res) => {
     console.log("We're HERE!!!!!!!!!!!!!!!!!!!")
-    // let tags = await Tags.find({});
-    // tags.forEach(( item ) => {
-    //     item.img = 'https://api.baghalati.com/uploads/categories/' + item.name.replace(/ /g, '-') + '.png';
+    let tags = await Tags.find({});
+    tags.forEach(( item ) => {
+        item.img = 'https://api.baghalati.com/uploads/categories/' + item.name.replace(/ /g, '-') + '.png';
 
-    // });
-    res.json({success: true})
+    });
+    res.json({success: true, items: tags})
 }
 productController.arabizeTags = async (req, res) => {
     const { array } = req.body;
