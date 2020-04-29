@@ -147,9 +147,13 @@ productController.getInactivesCount = async (req, res) => {
 };
 
 productController.getProduct = async (req, res) => {
-    const product = await Product.findById(req.params.id);
-
-    res.json(product);
+    const { id } = req.params;
+    try{
+        const product = await (await Product.findById(id)).populate('product_tags').populate('product_type').exec();
+        res.json({success: true, product: product});
+    }catch(err){
+        res.json({success: false, error: err})
+    }
 };
 
 productController.deleteProduct = async (req, res) => {
