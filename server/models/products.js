@@ -22,6 +22,7 @@ const productSchema = new Schema(
     {
         parentId:{type: String},
         name:{type: String, required: true},
+        name_ar: {type: String}, 
         description:{type: String, required: true},
         sku:{ type: Number, required: true },
         primary_image:{type: String},
