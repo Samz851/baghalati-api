@@ -34,7 +34,7 @@ router.post('/testhello', (req, res) => {
     res.json({success: true, message: "Hello World from Client Routes"})
 });
 router.post('/addfav', clientsController.addFavorite);
-router.get('/getfav', clientsController.getFavorites);
+router.get('/getfav/:id', clientsController.getFavorites);
 
 router.put('/:id', clientsController.editClientSimpleData);
 router.put('/email/:id/:email', clientsController.editEmailsData);
