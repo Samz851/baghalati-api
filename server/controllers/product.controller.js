@@ -149,7 +149,7 @@ productController.getInactivesCount = async (req, res) => {
 productController.getProduct = async (req, res) => {
     const { id } = req.params;
     try{
-        const product = await (await Product.findById(id)).populate('product_tags').populate('product_type').exec();
+        const product = await Product.findById(id).populate('product_tags').populate('product_type').exec();
         res.json({success: true, product: product});
     }catch(err){
         res.json({success: false, error: err})
