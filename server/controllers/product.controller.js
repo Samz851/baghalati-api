@@ -150,6 +150,9 @@ productController.getProduct = async (req, res) => {
     const { id } = req.params;
     try{
         const product = await Product.findById(id).populate('product_tags').populate('product_type').exec();
+        if(product){
+            product.primary_image = 'https://api.baghalati.com/uploads/products/' + product.name.replace(/ /g, '-') + '.jpg'
+        }
         res.json({success: true, product: product});
     }catch(err){
         res.json({success: false, error: err})
