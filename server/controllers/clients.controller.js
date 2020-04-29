@@ -188,7 +188,7 @@ clientsController.addFavorite = async (req, res) => {
         //check if item already liked
         var check = await Clients.find({_id: userID, favorites: { "$in" : [productID]}});
         console.log(check);
-        if(check){
+        if(check.length > 0){
             query = { $pull: { favorites: mongoose.Types.ObjectId(productID) } }
         }else {
             query = { $push: { favorites: mongoose.Types.ObjectId(productID) } }
