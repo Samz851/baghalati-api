@@ -188,6 +188,8 @@ clientsController.addFavorite = async (req, res) => {
             { _id: userID },
             { $push: { favorites: mongoose.Types.ObjectId(productID) } }
         ).exec();
+        console.log('USER');
+        console.log(user);
     }catch(err){
         throw err;
     }
@@ -196,6 +198,8 @@ clientsController.addFavorite = async (req, res) => {
             { _id: productID },
             { $inc: { favorites: 1 } }
         ).exec();
+        console.log('product');
+        console.log(product);
     }catch(error){
         throw error
     }
@@ -204,7 +208,8 @@ clientsController.addFavorite = async (req, res) => {
 }
 
 clientsController.getFavorites = async (req, res) => {
-    const { id } = req.query;
+    const { id } = req.params;
+
 
     try{
         var user = await Clients.findById(id).exec();
