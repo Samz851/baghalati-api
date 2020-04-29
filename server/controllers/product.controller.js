@@ -22,9 +22,9 @@ const Tags = require('../models/tags');
 const Categories = require('../models/categories');
 
 productController.getProducts = async (req, res) => {
-    const { page, offset } = req.query;
+    const { page, offset, limit } = req.query;
     console.log(`page is: ${page} and offset: ${offset}`)
-    let config = { limit: 20, skip: parseInt(offset) };
+    let config = { limit: limit ? limit : 20, skip: parseInt(offset) };
     try{
         let count = await Product.count({});
         try{
@@ -51,27 +51,23 @@ productController.getTags = async (req, res) => {
     }
 }
 
-productController.arabizeTags = async (req, res) => {
-    const { array } = req.body;
-    console.log(typeof req.body.array);
-    for (var item in array){
-        // console.log(`Key: ${item} and Value: ${array[item]}`);
-        try{
-            let tag = await Categories.findOne({ name: item });
-            if(tag){
-                tag.name_ar = array[item];
-                await tag.save();
-            } 
-        }catch(error){
-            console.log(`Error item: ${item} and value is: ${array[item]}`)
-            throw error;
-        }
-    }
-    // array.forEach( async ( key, value ) => {
-
-
-    // });
-}
+// productController.arabizeTags = async (req, res) => {
+//     const { array } = req.body;
+//     console.log(typeof req.body.array);
+//     for (var item in array){
+//         // console.log(`Key: ${item} and Value: ${array[item]}`);
+//         try{
+//             let tag = await Product.findOne({ sku: parseInt(item) });
+//             if(tag){
+//                 tag.name_ar = array[item];
+//                 await tag.save();
+//             } 
+//         }catch(error){
+//             console.log(`Error item: ${item} and value is: ${array[item]}`)
+//             throw error;
+//         }
+//     }
+// }
 
 productController.getCount = async (req, res) => {
     const count = await Product.countDocuments();
