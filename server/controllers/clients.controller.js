@@ -182,11 +182,20 @@ clientsController.editPhonesData = async (req, res) => {
 
 clientsController.addFavorite = async (req, res) => {
     const { userID, productID } = req.body;
+    let query;
 
     try{
+        //check if item already liked
+        var check = await Clients.find({_id: userID, favorites: { "$in" : [productID]}});
+        console.log(check);
+        if(check){
+            query = { $pull: { favorites: mongoose.Types.ObjectId(productID) } }
+        }else {
+            query = { $push: { favorites: mongoose.Types.ObjectId(productID) } }
+        }
         var user = await Clients.update(
             { _id: userID },
-            { $push: { favorites: mongoose.Types.ObjectId(productID) } }
+            query
         ).exec();
         console.log('USER');
         console.log(user);
