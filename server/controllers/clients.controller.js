@@ -189,7 +189,7 @@ clientsController.addFavorite = async (req, res) => {
             { $push: { favorites: mongoose.Types.ObjectId(productID) } }
         ).exec();
     }catch(err){
-        console.log(err);
+        throw err;
     }
     try{
         var product = await Products.update(
@@ -197,8 +197,9 @@ clientsController.addFavorite = async (req, res) => {
             { $inc: { favorites: 1 } }
         ).exec();
     }catch(error){
-        console.log(error)
+        throw error
     }
+    res.json({ success: true })
     
 }
 
