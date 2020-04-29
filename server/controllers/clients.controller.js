@@ -218,8 +218,6 @@ clientsController.addFavorite = async (req, res) => {
 
 clientsController.getFavorites = async (req, res) => {
     const { id } = req.params;
-
-
     try{
         var user = await Clients.findById(id).exec();
         if(user){
