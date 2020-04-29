@@ -31,7 +31,7 @@ productController.getProducts = async (req, res) => {
             let products = await Product.find({}, null, config);
             if(products){
                 products.forEach(( item ) => {
-                    item.primary_image = 'https://api.baghalati.com/uploads/products/' + item.name + '.jpg';
+                    item.primary_image = 'https://api.baghalati.com/uploads/products/' + item.name.replace(/ /g, '-') + '.jpg';
                 });
                 res.json({success: true, result: products, total: count});
             }else{
