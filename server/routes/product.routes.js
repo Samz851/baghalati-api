@@ -34,16 +34,10 @@ router.get('/deactivate/:id', productsController.deactivateProduct);
 // router.post('/arabizeTags', productsController.arabizeTags);
 
 router.put('/:id', productsController.editProduct);
-/*
-    send as request body:
-
-    {
-        "image": "https://unsplash.com/photos/yC-Yzbqy7PY"
-    }
-*/
 router.put('/addimage/:id', productsController.addImage);
 
 router.post('/', productsController.createProduct);
+router.post('/getProductsByIDs', productsController.getProductsByIDs);
 
 router.delete('/:id', productsController.deleteProduct);
 

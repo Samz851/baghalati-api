@@ -46,6 +46,26 @@ productController.getProducts = async (req, res) => {
 
 };
 
+productController.getProductsByIDs = async (req, res) => {
+    const { ids } = req.body;
+    if(Array.isArray( ids )){
+        try{
+            let products = await Product.find({'_id': { $in: ids }}).exec();
+            if(products){
+                products.forEach(( item ) => {
+                    item.primary_image = 'https://api.baghalati.com/uploads/products/' + item.name.replace(/ /g, '-') + '.jpg';
+                });
+                res.json({success: true, favorites: products});
+            }else{
+                res.json({success: false})
+            }
+        }catch(error){
+            console.log(error);
+        }
+    }else{
+        
+    }
+}
 productController.getTags = async (req, res) => {
     let tags = await Tags.find({});
     if(tags){
