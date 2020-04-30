@@ -35,28 +35,32 @@ clientsController.createClient = async (req, res) => {
     if (req.body.password){
         req.body.password = Bcrypt.hashSync(req.body.password, 10);
     }
+    req.body.session_id = Config.jwt.uniqid();
     const client = new Clients(req.body);
     try{
         let user = await client.save();
         //SAM prepare JWT
-        var token = jwt.sign({
-            ID: user._id, 
-            name: user.full_name,
-            dob: user.date_of_birth,
-            phone: user.contact_no,
-            email: user.contact_email,
-            address: user.billing_address,
-            sub_accounts: user.sub_accounts
-        }, Config.jwt.secret);
-        var decoded = jwt.verify(token, Config.jwt.secret);
-        console.log(decoded);
-        res.send({
-            success: true,
-            message: "Registration successful",
-            token: token,
-            sid: Config.jwt.uniqid()
-        });
-        res.json({ "success": true, user: {_id: user._id}});
+        if(user){
+            var token = jwt.sign({
+                ID: user._id, 
+                name: user.full_name,
+                dob: user.date_of_birth,
+                phone: user.contact_no,
+                email: user.contact_email,
+                address: user.billing_address,
+                sub_accounts: user.sub_accounts,
+                favorites: user.favorites,
+                sid: user.session_id
+            }, Config.jwt.secret);
+            var decoded = jwt.verify(token, Config.jwt.secret);
+            res.send({
+                success: true,
+                message: "Registration Successful!",
+                token: token
+            });
+        }else{
+            res.json({success: false, message: 'Failed to generate session token'})
+        }
     }
     catch(err){
         res.json({"success": false, "message": err})
@@ -372,24 +376,29 @@ clientsController.clientAuthentication = async (req,res) =>{
                 message: "The password is invalid"
             });
         }
-        //SAM prepare JWT
-        var token = jwt.sign({
-            ID: user._id, 
-            name: user.full_name,
-            dob: user.date_of_birth,
-            phone: user.contact_no,
-            email: user.contact_email,
-            address: user.billing_address,
-            sub_accounts: user.sub_accounts
-        }, Config.jwt.secret);
-        var decoded = jwt.verify(token, Config.jwt.secret);
-        console.log(decoded);
-        res.send({
-            success: true,
-            message: "The username and password combination is correct!",
-            token: token,
-            sid: Config.jwt.uniqid()
-        });
+        user.session_id = Config.jwt.uniqid();
+        let success = await user.save();
+        if(success){
+            var token = jwt.sign({
+                ID: user._id, 
+                name: user.full_name,
+                dob: user.date_of_birth,
+                phone: user.contact_no,
+                email: user.contact_email,
+                address: user.billing_address,
+                sub_accounts: user.sub_accounts,
+                favorites: user.favorites,
+                sid: user.session_id
+            }, Config.jwt.secret);
+            var decoded = jwt.verify(token, Config.jwt.secret);
+            res.send({
+                success: true,
+                message: "The username and password combination is correct!",
+                token: token
+            });
+        }else{
+            res.json({success: false, message: 'Failed to generate session token'})
+        }
     } catch (error) {
         res.status(500).send(error);
     }
@@ -425,7 +434,7 @@ clientsController.getClient = async (req, res) => {
                 address: user.billing_address,
                 sub_accounts: user.sub_accounts,
                 favorites: user.favorites,
-                sid: Config.jwt.uniqid()
+                sid: user.session_id
             }, Config.jwt.secret);
             var decoded = jwt.verify(token, Config.jwt.secret);
             console.log(decoded);
