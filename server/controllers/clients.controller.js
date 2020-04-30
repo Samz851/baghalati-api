@@ -416,7 +416,7 @@ clientsController.getClient = async (req, res) => {
             message: 'Login Failed'
         })
     }
-    if (user.session_id !== sid ) {
+    if (user.session_id !== id ) {
         return res.status(400).send({
             success: false,
             message: "The SID is invalid"
