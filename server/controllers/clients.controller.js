@@ -398,16 +398,48 @@ clientsController.clientAuthentication = async (req,res) =>{
 clientsController.getClient = async (req, res) => {
     const { id } = req.params;
     var user = await Clients.findOne({
-        _id: id
+        session_id: id
     }).exec();
-    // console.log("User: "+ user);
 
-    if (!user) {
+    if(!user){
         return res.status(400).send({
             success: false,
-            message: "The email does not exist"
-        });
+            message: 'Login Failed'
+        })
     }
+    if (user.session_id !== sid ) {
+        return res.status(400).send({
+            success: false,
+            message: "The SID is invalid"
+        });
+    }else{
+        user.session_id = Config.jwt.uniqid();
+        let success = await user.save();
+        if(success){
+            var token = jwt.sign({
+                ID: user._id, 
+                name: user.full_name,
+                dob: user.date_of_birth,
+                phone: user.contact_no,
+                email: user.contact_email,
+                address: user.billing_address,
+                sub_accounts: user.sub_accounts,
+                favorites: user.favorites,
+                sid: Config.jwt.uniqid()
+            }, Config.jwt.secret);
+            var decoded = jwt.verify(token, Config.jwt.secret);
+            console.log(decoded);
+            res.send({
+                success: true,
+                message: "The username and password combination is correct!",
+                token: token
+            });
+        }else{
+            res.json({success: false, message: 'Failed to generate session token'})
+        }
+    }
+    // console.log("User: "+ user);
+
     //SAM prepare JWT
     var token = jwt.sign({
         ID: user._id, 
@@ -416,7 +448,8 @@ clientsController.getClient = async (req, res) => {
         phone: user.contact_no,
         email: user.contact_email,
         address: user.billing_address,
-        sub_accounts: user.sub_accounts
+        sub_accounts: user.sub_accounts,
+        favorites: user.favorites
     }, Config.jwt.secret);
     var decoded = jwt.verify(token, Config.jwt.secret);
     console.log(decoded);

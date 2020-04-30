@@ -145,7 +145,10 @@ const ClientSchema = new Schema({
     favorites: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'products'
-    }]
+    }],
+    session_id: {
+        type: String
+    },
 }, {
     
     timestamps: true,
