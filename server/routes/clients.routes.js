@@ -33,6 +33,7 @@ router.post('/paymentcard/:id', clientsController.pushPaymentCard);
 router.post('/testhello', (req, res) => {
     res.json({success: true, message: "Hello World from Client Routes"})
 });
+router.post('/order', clientController.pushOrder);
 router.post('/addfav', clientsController.addFavorite);
 router.get('/getfav/:id', clientsController.getFavorites);
 
@@ -41,6 +42,7 @@ router.put('/email/:id/:email', clientsController.editEmailsData);
 router.put('/address/:id/:address', clientsController.editAddressData);
 router.put('/phones/:phone', clientsController.editPhonesData);
 router.put('/paymentcard/:id/:idcard', clientsController.editPaymentCard);
+
 
 router.delete('/email/:id/:email', clientsController.deleteEmails);
 router.delete('/address/:id/:address', clientsController.deleteAddresses);
