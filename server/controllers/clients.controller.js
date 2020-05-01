@@ -448,26 +448,6 @@ clientsController.getClient = async (req, res) => {
         }
     }
     // console.log("User: "+ user);
-
-    //SAM prepare JWT
-    var token = jwt.sign({
-        ID: user._id, 
-        name: user.full_name,
-        dob: user.date_of_birth,
-        phone: user.contact_no,
-        email: user.contact_email,
-        address: user.billing_address,
-        sub_accounts: user.sub_accounts,
-        favorites: user.favorites
-    }, Config.jwt.secret);
-    var decoded = jwt.verify(token, Config.jwt.secret);
-    console.log(decoded);
-    res.send({
-        success: true,
-        message: "The username and password combination is correct!",
-        token: token,
-        sid: Config.jwt.uniqid()
-    });
 };
 
 clientsController.pushPaymentCard = async (req, res) => {
