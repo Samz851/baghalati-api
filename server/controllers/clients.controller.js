@@ -537,6 +537,12 @@ clientsController.testUserAPI = function(req, res){
     res.json({success:true, message: 'User API working'});
 }
 
+clientController.pushOrder = async (req, res) => {
+    const token = req.body;
+    var decoded = jwt.verify(token, Config.jwt.secret);
+    res.json({success: true, order: decoded})
+}
+
 module.exports = clientsController;
 
 /** this ends this file

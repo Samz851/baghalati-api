@@ -32,7 +32,8 @@ const OrderSchema = new Schema({
 
     amount_total: { type: mongoose.Schema.Types.Decimal128,  required: true},
     
-    tax_ded: { type: mongoose.Schema.Types.Decimal128, required: true, description: "tax deduction from total_amount"},
+    delivery_time: { type: String },
+    tax_ded: { type: mongoose.Schema.Types.Decimal128, required: false, description: "tax deduction from total_amount"},
     status: { type: String, required: true}
 
 })
