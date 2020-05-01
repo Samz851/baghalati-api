@@ -20,6 +20,7 @@ const Bcrypt = require("bcryptjs");
 const clientsController = {};
 const Clients = require('../models/clients');
 const Products = require('../models/products');
+const Orders = require('../models/orders');
 const Config = require('../../config');
 const jwt = require('jsonwebtoken');
 const https = require('axios');
@@ -519,10 +520,35 @@ clientsController.testUserAPI = function(req, res){
 
 clientsController.pushOrder = async (req, res) => {
     const { token } = req.body;
+    let cart_items = [];
     console.log('THE REQ BODY IS');
     console.log(req.body);
     var decoded = jwt.verify(token, Config.jwt.secret);
-    res.json({success: true, order: decoded})
+    token.cart.map((item, i) => {
+        cart_items.push({
+            item: mongoose.Types.ObjectId(item.item),
+            quantity: item.quantity,
+            price: item.price
+        })
+    })
+    //Prepare Order Obj
+    let orderObj = {
+        customer_id: mongoose.Types.ObjectId(decoded.customer),
+        checkout_items: cart_items,
+        amount_total: decoded.total,
+        delivery_time: decoded.deliveryTime,
+        delivery_address: decoded.address._id,
+        status: decoded.status
+    }
+
+    let order = new Orders(orderObj);
+    try{
+        let save = order.save();
+        res.json({success: true})
+    }catch(err){
+        res.json({success: false, error: err});
+    }
+    // res.json({success: true, order: decoded})
 }
 
 module.exports = clientsController;

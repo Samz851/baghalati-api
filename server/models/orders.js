@@ -25,15 +25,21 @@ const OrderSchema = new Schema({
     checkout_items: [
         { 
             quantity: {type: Number},
-            product: {type: mongoose.Schema.Types.ObjectId, ref: 'products'},
-            sale_price: {type: mongoose.Schema.Types.Decimal128}
+            item: {type: mongoose.Schema.Types.ObjectId, ref: 'products'},
+            price: {type: mongoose.Schema.Types.Decimal128}
         }
     ],
 
     amount_total: { type: mongoose.Schema.Types.Decimal128,  required: true},
     
     delivery_time: { type: String },
+    delivery_address: { type: String },
     tax_ded: { type: mongoose.Schema.Types.Decimal128, required: false, description: "tax deduction from total_amount"},
     status: { type: String, required: true}
 
-})
+}, {
+    timestamps: true,
+    autoIndex: true
+});
+
+module.exports = mongoose.model('orders', OrderSchema);
