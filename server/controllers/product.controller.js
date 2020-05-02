@@ -23,7 +23,7 @@ const Categories = require('../models/categories');
 
 productController.getProducts = async (req, res) => {
     const { page, offset, limit, cat } = req.query;
-    console.log(`page is: ${page} and offset: ${offset}`)
+    console.log(`page is: ${page} and offset: ${offset} and cat is: ${cat}`);
     let config = { limit: limit ? parseInt(limit) : 20, skip: parseInt(offset) };
     let query = cat !== 'all' ? {product_tags: { $in: cat }} : {}
     try{
