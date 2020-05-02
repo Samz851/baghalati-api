@@ -22,13 +22,21 @@ const Tags = require('../models/tags');
 const Categories = require('../models/categories');
 
 productController.getProducts = async (req, res) => {
-    const { page, offset, limit } = req.query;
+    const { page, offset, limit, cat } = req.query;
     console.log(`page is: ${page} and offset: ${offset}`)
     let config = { limit: limit ? parseInt(limit) : 20, skip: parseInt(offset) };
     try{
-        let count = await Product.count({});
+        if(cat !== 'all'){
+            let count = await Product.countDocuments({product_tags: { $in: cat }});
+        }else{
+            let count = await Product.count({});
+        }
         try{
-            let products = await Product.find({}, null, config);
+            if(cat !== 'all'){
+                let products = await Product.find({product_tags: { $in: cat }}, null, config);
+            }else{
+                let products = await Product.find({}, null, config);
+            }
             if(products){
                 products.forEach(( item ) => {
                     item.primary_image = 'https://api.baghalati.com/uploads/products/' + item.name.replace(/ /g, '-') + '.jpg';
