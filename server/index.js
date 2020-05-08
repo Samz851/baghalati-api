@@ -56,6 +56,9 @@ app.use('/api/categories', require('./routes/categories.routes'));
 app.use('/api/admin', require('./routes/admins.routes'));
 app.use('/api/pos', require('./routes/POS.routes'));
 
+app.get('*', (req, res, err) => {
+    res.json({message: 'Welcome to Jubna We Baith API v1'})
+})
 
 /**
  * S T A R T I N G   S E R V E R

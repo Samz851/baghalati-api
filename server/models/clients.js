@@ -149,6 +149,8 @@ const ClientSchema = new Schema({
     session_id: {
         type: String
     },
+    activation_key: { type: String, required: true},
+    is_active: {type: Boolean, require: true, default: false}
 }, {
     
     timestamps: true,

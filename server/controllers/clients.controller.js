@@ -36,28 +36,29 @@ clientsController.createClient = async (req, res) => {
     if (req.body.password){
         req.body.password = Bcrypt.hashSync(req.body.password, 10);
     }
+    const activation = Config.activationKey();
+    req.body.activation_key = activation;
     req.body.session_id = Config.jwt.uniqid();
     const client = new Clients(req.body);
     try{
         let user = await client.save();
         //SAM prepare JWT
         if(user){
-            var token = jwt.sign({
-                ID: user._id, 
-                name: user.full_name,
-                dob: user.date_of_birth,
-                phone: user.contact_no,
-                email: user.contact_email,
-                address: user.billing_address,
-                sub_accounts: user.sub_accounts,
-                favorites: user.favorites,
-                sid: user.session_id
-            }, Config.jwt.secret);
-            var decoded = jwt.verify(token, Config.jwt.secret);
+            // var token = jwt.sign({
+            //     ID: user._id, 
+            //     name: user.full_name,
+            //     dob: user.date_of_birth,
+            //     phone: user.contact_no,
+            //     email: user.contact_email,
+            //     address: user.billing_address,
+            //     sub_accounts: user.sub_accounts,
+            //     favorites: user.favorites,
+            //     sid: user.session_id
+            // }, Config.jwt.secret);
+            // var decoded = jwt.verify(token, Config.jwt.secret);
             res.send({
                 success: true,
                 message: "Registration Successful!",
-                token: token
             });
         }else{
             res.json({success: false, message: 'Failed to generate session token'})
@@ -66,6 +67,10 @@ clientsController.createClient = async (req, res) => {
     catch(err){
         res.json({"success": false, "message": err})
     }
+};
+
+clientsController.activateClient = async (req, res) => {
+
 };
 
 clientsController.editClientSimpleData = async (req, res) => {
