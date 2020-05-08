@@ -26,7 +26,7 @@ const { mongoose } = require('./database');
 /**
  * S E T T I N G S
  */
-app.set('port', process.env.PORT || 3210);
+app.set('port', process.env.PORT || 3000);
 
 /** 
  * H I K E U P  A U T H
