@@ -37,6 +37,7 @@ router.post('/order', clientsController.pushOrder);
 router.post('/addfav', clientsController.addFavorite);
 router.get('/getfav/:id', clientsController.getFavorites);
 router.get('/activate/:id', clientsController.activateClient);
+router.get('/sendActivation/:email', clientsController.sendActivationLink);
 
 router.put('/:id', clientsController.editClientSimpleData);
 router.put('/email/:id/:email', clientsController.editEmailsData);
