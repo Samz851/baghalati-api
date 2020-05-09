@@ -60,7 +60,7 @@ clientsController.createClient = async (req, res) => {
              };
 
              try{
-                const result = await sendMyEmails(data);
+                const result = await Emailer(data);
                 res.send({
                     success: true,
                     message: "Registration Successful!",
@@ -132,7 +132,7 @@ clientsController.sendActivationLink = async (req, res) => {
              };
 
              try{
-                const result = await sendMyEmails(data);
+                const result = await Emailer(data);
                 res.send({
                     success: true,
                     message: "Registration Successful!",

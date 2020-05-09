@@ -1,7 +1,7 @@
 const path = require('path');
 const ejs = require('ejs-promise');
 
-export default async ({template, params}) => {
+module.exports =  async ({template, params}) => {
 
    // Get the EJS file that will be used to generate the HTML
    const file = path.join(__dirname, `./templates/${template}.ejs`);
