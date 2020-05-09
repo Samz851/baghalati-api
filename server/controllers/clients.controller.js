@@ -453,6 +453,12 @@ clientsController.clientAuthentication = async (req,res) =>{
                 message: "The password is invalid"
             });
         }
+        if (!user.is_active) {
+            return res.status(400).send({
+                success: false,
+                message: "Not Active"
+            });
+        }
         user.session_id = Config.jwt.uniqid();
         let success = await user.save();
         if(success){
