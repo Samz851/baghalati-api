@@ -24,6 +24,8 @@ const Orders = require('../models/orders');
 const Config = require('../../config');
 const jwt = require('jsonwebtoken');
 const https = require('axios');
+const HTMLgenerator = require('../services/HTMLgenerator');
+const Emailer = require('../services/Emailer');
 
 clientsController.getClients = async (req, res) => {
     const clients = await Clients.find();
@@ -44,6 +46,28 @@ clientsController.createClient = async (req, res) => {
         let user = await client.save();
         //SAM prepare JWT
         if(user){
+
+            const html = await HTMLGenerator({
+                template: 'activation.email',
+                params: {name: user.full_name , logo: Config.LogoBase64, activation_link: 'https://api.jubnawebaith.com/v1/clients/activate/' + activation}
+             });
+
+             const data = {
+                from: 'JWB Team <admin@jubnawebaith.com>',
+                to: user.contact_email,
+                subject: 'Activate your account',
+                html
+             };
+
+             try{
+                const result = await sendMyEmails(data);
+                res.send({
+                    success: true,
+                    message: "Registration Successful!",
+                });
+             }catch(error){
+                 throw error
+             }
             // var token = jwt.sign({
             //     ID: user._id, 
             //     name: user.full_name,
@@ -56,10 +80,7 @@ clientsController.createClient = async (req, res) => {
             //     sid: user.session_id
             // }, Config.jwt.secret);
             // var decoded = jwt.verify(token, Config.jwt.secret);
-            res.send({
-                success: true,
-                message: "Registration Successful!",
-            });
+
         }else{
             res.json({success: false, message: 'Failed to generate session token'})
         }
@@ -70,8 +91,58 @@ clientsController.createClient = async (req, res) => {
 };
 
 clientsController.activateClient = async (req, res) => {
+    const { id } = req.params;
 
+    if( id ) {
+        let user = await Clients.findOne({
+            activation_key: id
+        }).exec();
+
+        if(user){
+            user.is_active = true;
+            await user.save();
+            res.redirect('https://jubnawebaith.com/activated');
+        }else{
+            res.redirect('https://jubnawebaith.com/not_activated');
+        }
+    }
 };
+
+clientsController.sendActivationLink = async (req, res) => {
+    const { email } = req.params;
+
+    if( email ) {
+        let user = await Clients.findOne({
+            contact_email : email
+        });
+        if(user){
+            const activation = Config.activationKey();
+            user.activation_key = activation;
+            await user.save();
+            const html = await HTMLGenerator({
+                template: 'activation.email',
+                params: {name: user.full_name , logo: Config.LogoBase64, activation_link: 'https://api.jubnawebaith.com/v1/clients/activate/' + activation}
+             });
+
+             const data = {
+                from: 'JWB Team <admin@jubnawebaith.com>',
+                to: user.contact_email,
+                subject: 'Activate your account',
+                html
+             };
+
+             try{
+                const result = await sendMyEmails(data);
+                res.send({
+                    success: true,
+                    message: "Registration Successful!",
+                });
+             }catch(error){
+                 throw error
+             }
+        }
+    }
+}
 
 clientsController.editClientSimpleData = async (req, res) => {
     const { id } = req.params;

@@ -49,12 +49,12 @@ app.use('/uploads', express.static(__dirname + '/uploads'));
 /**
  * R O U T E S
  */ 
-app.use('/api/products', require('./routes/product.routes'));
-app.use('/api/clients', require('./routes/clients.routes'));
-app.use('/api/suppliers', require('./routes/suppliers.routes'));
-app.use('/api/categories', require('./routes/categories.routes'));
-app.use('/api/admin', require('./routes/admins.routes'));
-app.use('/api/pos', require('./routes/POS.routes'));
+app.use('/v1/products', require('./routes/product.routes'));
+app.use('/v1/clients', require('./routes/clients.routes'));
+app.use('/v1/suppliers', require('./routes/suppliers.routes'));
+app.use('/v1/categories', require('./routes/categories.routes'));
+app.use('/v1/admin', require('./routes/admins.routes'));
+app.use('/v1/pos', require('./routes/POS.routes'));
 
 app.get('/test', (req, res, err) => {
     res.json({message: 'Welcome to Jubna We Baith API v1'})
