@@ -1,5 +1,5 @@
-import path from 'path';
-import ejs from 'ejs-promise';
+const path = require('path');
+const ejs = require('ejs-promise');
 
 export default async ({template, params}) => {
 
