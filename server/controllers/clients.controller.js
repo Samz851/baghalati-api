@@ -114,7 +114,7 @@ clientsController.sendActivationLink = async (req, res) => {
             const activation = Config.activationKey();
             user.activation_key = activation;
             await user.save();
-            const html = await HTMLGenerator({
+            const html = await HTMLgenerator({
                 template: 'activation.email',
                 params: {name: user.full_name , logo: Config.LogoBase64, activation_link: 'https://api.jubnawebaith.com/v1/clients/activate/' + activation}
              });
