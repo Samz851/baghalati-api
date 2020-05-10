@@ -133,6 +133,7 @@ clientsController.sendActivationLink = async (req, res) => {
                     message: "Registration Successful!",
                 });
              }catch(error){
+                 res.json({success: false, message: error})
                  throw error
              }
         }
