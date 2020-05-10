@@ -33,7 +33,6 @@ clientsController.getClients = async (req, res) => {
 };
 
 clientsController.createClient = async (req, res) => {
-    console.log(req.body);
     req.body.customer_id = mongoose.Types.ObjectId();
     if (req.body.password){
         req.body.password = Bcrypt.hashSync(req.body.password, 10);
@@ -46,7 +45,6 @@ clientsController.createClient = async (req, res) => {
         let user = await client.save();
         //SAM prepare JWT
         if(user){
-
             try{
                 const html = await HTMLgenerator({
                     template: 'activation.email',
@@ -71,25 +69,19 @@ clientsController.createClient = async (req, res) => {
             }catch(error){
                 throw error;
             }
-            // var token = jwt.sign({
-            //     ID: user._id, 
-            //     name: user.full_name,
-            //     dob: user.date_of_birth,
-            //     phone: user.contact_no,
-            //     email: user.contact_email,
-            //     address: user.billing_address,
-            //     sub_accounts: user.sub_accounts,
-            //     favorites: user.favorites,
-            //     sid: user.session_id
-            // }, Config.jwt.secret);
-            // var decoded = jwt.verify(token, Config.jwt.secret);
 
         }else{
             res.json({success: false, message: 'Failed to generate session token'})
         }
     }
     catch(err){
-       throw err;
+        if(err.errors.contact_email){
+            res.json({success: false, message: err.errors.contact_email.properties.path + ' : ' + err.errors.contact_email.properties.value +  ' already exist'})
+        }else{
+            res.json({success: false, message: 'Failed to register, please contact Admin at admin@jubnawebaith.com'})
+            throw err;
+        }
+        // console.log(err);
     }
 };
 
