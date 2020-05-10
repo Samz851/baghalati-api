@@ -47,27 +47,30 @@ clientsController.createClient = async (req, res) => {
         //SAM prepare JWT
         if(user){
 
-            const html = await HTMLGenerator({
-                template: 'activation.email',
-                params: {name: user.full_name , logo: Config.LogoBase64, activation_link: 'https://api.jubnawebaith.com/v1/clients/activate/' + activation}
-             });
-
-             const data = {
-                from: 'JWB Team <admin@jubnawebaith.com>',
-                to: user.contact_email,
-                subject: 'Activate your account',
-                html
-             };
-
-             try{
-                const result = await Emailer(data);
-                res.send({
-                    success: true,
-                    message: "Registration Successful!",
-                });
-             }catch(error){
-                 throw error
-             }
+            try{
+                const html = await HTMLgenerator({
+                    template: 'activation.email',
+                    params: {name: user.full_name , logo: Config.LogoBase64, activation_link: 'https://api.jubnawebaith.com/v1/clients/activate/' + activation}
+                 });
+                 const data = {
+                    from: 'JWB Team <admin@jubnawebaith.com>',
+                    to: user.contact_email,
+                    subject: 'Activate your account',
+                    html
+                 };
+    
+                 try{
+                    const result = await Emailer(data);
+                    res.send({
+                        success: true,
+                        message: "Registration Successful!",
+                    });
+                 }catch(error){
+                     throw error
+                 }
+            }catch(error){
+                throw error;
+            }
             // var token = jwt.sign({
             //     ID: user._id, 
             //     name: user.full_name,
@@ -86,7 +89,7 @@ clientsController.createClient = async (req, res) => {
         }
     }
     catch(err){
-        res.json({"success": false, "message": err})
+       throw err;
     }
 };
 
