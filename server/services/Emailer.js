@@ -7,6 +7,8 @@ module.exports =  async (data) => {
    return new Promise((resolve, reject) => {
       return mailgun.messages().send(data, (error, result) => {
          if (error) {
+            console.log('Errored Email Markup!!!!');
+            console.log(JSON.stringify(data));
             // winston.error(`Error sending ${data.subject}`, error);
             return reject(error);
          }
