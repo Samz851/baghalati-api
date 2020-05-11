@@ -134,6 +134,7 @@ clientsController.sendActivationLink = async (req, res) => {
                 });
              }catch(error){
                  res.json({success: false, message: error})
+                 console.log(error);
                  throw error
              }
         }
