@@ -130,7 +130,7 @@ clientsController.sendActivationLink = async (req, res) => {
                 const result = await Emailer(data);
                 res.send({
                     success: true,
-                    message: "Registration Successful!",
+                    message: "Check your email!",
                 });
              }catch(error){
                  res.json({success: false, message: error})

@@ -44,6 +44,9 @@ app.use(bodyParser.urlencoded({
     extended: true
   }));
 app.use('/uploads', express.static(__dirname + '/uploads'));
+app.get('/', (req, res, err) => {
+  res.json({message: 'Welcome to Jubna We Baith API v1'})
+})
 
 
 /**
@@ -56,9 +59,7 @@ app.use('/v1/categories', require('./routes/categories.routes'));
 app.use('/v1/admin', require('./routes/admins.routes'));
 app.use('/v1/pos', require('./routes/POS.routes'));
 
-app.get('/test', (req, res, err) => {
-    res.json({message: 'Welcome to Jubna We Baith API v1'})
-})
+
 
 /**
  * S T A R T I N G   S E R V E R
