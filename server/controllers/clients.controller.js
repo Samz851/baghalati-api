@@ -123,7 +123,7 @@ clientsController.sendActivationLink = async (req, res) => {
                 from: 'JWB Team <admin@jubnawebaith.com>',
                 to: user.contact_email,
                 subject: 'Activate your account',
-                html
+                html: html
              };
 
              try{
