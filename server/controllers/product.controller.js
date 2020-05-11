@@ -32,7 +32,7 @@ productController.getProducts = async (req, res) => {
             let products = await Product.find(query, null, config);
             if(products){
                 products.forEach(( item ) => {
-                    item.primary_image = 'https://api.baghalati.com/uploads/products/' + item.name.replace(/ /g, '-') + '.jpg';
+                    item.primary_image = 'https://api.jubnawebaith.com/uploads/products/' + item.name.replace(/ /g, '-') + '.jpg';
                 });
                 res.json({success: true, result: products, total: count});
             }else{
@@ -54,7 +54,7 @@ productController.getProductsByIDs = async (req, res) => {
             let products = await Product.find({'_id': { $in: ids }}).exec();
             if(products){
                 products.forEach(( item ) => {
-                    item.primary_image = 'https://api.baghalati.com/uploads/products/' + item.name.replace(/ /g, '-') + '.jpg';
+                    item.primary_image = 'https://api.jubnawebaith.com/uploads/products/' + item.name.replace(/ /g, '-') + '.jpg';
                 });
                 res.json({success: true, favorites: products});
             }else{
@@ -71,7 +71,7 @@ productController.getTags = async (req, res) => {
     let tags = await Tags.find({});
     if(tags){
         tags.forEach(( item ) => {
-            item.img = 'https://api.baghalati.com/uploads/categories/' + item.name.replace(/ /g, '-') + '.png';
+            item.img = 'https://api.jubnawebaith.com/uploads/categories/' + item.name.replace(/ /g, '-') + '.png';
         });
         res.json({success: true, categories: tags});
     }else{
@@ -172,7 +172,7 @@ productController.getProduct = async (req, res) => {
     try{
         const product = await Product.findById(id).populate('product_tags').populate('product_type').exec();
         if(product){
-            product.primary_image = 'https://api.baghalati.com/uploads/products/' + product.name.replace(/ /g, '-') + '.jpg'
+            product.primary_image = 'https://api.jubnawebaith.com/uploads/products/' + product.name.replace(/ /g, '-') + '.jpg'
         }
         res.json({success: true, product: product});
     }catch(err){

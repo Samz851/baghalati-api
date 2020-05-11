@@ -28,7 +28,7 @@ const tokenURI = 'https://api.hikeup.com/oauth/token';
 const authURI = 'https://api.hikeup.com/oauth/authorize';
 const client_id =  'baghalati-1be96a0e45';
 const client_secret = '452e2c42d33e48c9b755bdae9991ce46';
-const redirect_uri = 'https://api.baghalati.com/api/pos/hikeup-redirect';
+const redirect_uri = 'https://api.jubnawebaith.com/api/pos/hikeup-redirect';
 const get_products_uri = 'https://api.hikeup.com/api/v1/products/get_all';
 const get_product_types_uri = 'https://api.hikeup.com/api/v1/product_types/get_all';
 
