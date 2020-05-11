@@ -133,10 +133,12 @@ clientsController.sendActivationLink = async (req, res) => {
                     message: "Check your email!",
                 });
              }catch(error){
-                 res.json({success: false, message: error})
+                 res.json({success: false, message: 'لم نتمكن من إرسال رابط التفعيل '})
                  console.log(error);
                  throw error
              }
+        }else{
+            res.json({success: false, message: 'لا يوجد حساب بهذا الأيميل'})
         }
     }
 }
