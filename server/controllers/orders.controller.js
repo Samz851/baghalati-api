@@ -28,12 +28,12 @@ ordersController.getActiveProducts = async (req, res) => {
     try{
         var orders = await Orders.find({
             status: 'received'
-        }).populate({
+        }).populate('customer_id').populate({
             path: 'checkout_items.item',
             populate: {
               path: 'item',
               model: 'products'
-            }
+            },
         }).exec();
         if(orders){
             res.json({success: true, data: orders})
