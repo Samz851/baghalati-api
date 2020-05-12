@@ -28,7 +28,13 @@ ordersController.getActiveProducts = async (req, res) => {
     try{
         var orders = await Orders.findOne({
             status: 'received'
-        }).populate('checkout_items').exec();
+        }).populate({
+            path: 'checkout_items.item',
+            populate: {
+              path: 'item',
+              model: 'products'
+            }
+        }).exec();
         if(orders){
             res.json({success: true, data: orders})
         }else{
