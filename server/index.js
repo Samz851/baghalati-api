@@ -57,6 +57,7 @@ app.use('/v1/clients', require('./routes/clients.routes'));
 app.use('/v1/suppliers', require('./routes/suppliers.routes'));
 app.use('/v1/categories', require('./routes/categories.routes'));
 app.use('/v1/admin', require('./routes/admins.routes'));
+app.use('/v1/orders', require('./routes/orders.routes'));
 app.use('/v1/pos', require('./routes/POS.routes'));
 
 
