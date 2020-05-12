@@ -41,7 +41,7 @@ PushManager.sendDirectNotification = (title, body, deviceID) => {
 
 }
 
-PushManager.sendOrderNotification = ( deviceID, status ) => {
+PushManager.sendOrderNotification = async ( deviceID, status ) => {
     let message = await https.post(fcmURI, {to: deviceID, data: statusBody[status]}, {headers: headers});
     
 }
