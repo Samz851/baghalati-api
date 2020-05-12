@@ -21,6 +21,7 @@ const { Schema } = mongoose;
 const OrderSchema = new Schema({
 
     customer_id: {type: mongoose.Schema.Types.ObjectId, ref: 'customers', required: true},
+    device_id: { type: String },
 
     checkout_items: [
         { 

@@ -26,6 +26,7 @@ const jwt = require('jsonwebtoken');
 const https = require('axios');
 const HTMLgenerator = require('../services/HTMLgenerator');
 const Emailer = require('../services/Emailer');
+const PushManager = require('../services/PushManager');
 
 clientsController.getClients = async (req, res) => {
     const clients = await Clients.find();
@@ -619,12 +620,14 @@ clientsController.pushOrder = async (req, res) => {
         amount_total: decoded.total,
         delivery_time: decoded.deliveryTime,
         delivery_address: decoded.address._id,
-        status: decoded.status
+        status: decoded.status,
+        device_id: decoded.device_id
     }
 
     let order = new Orders(orderObj);
     try{
         let save = await order.save();
+        PushManager.sendOrderNotification(decoded.device_id, decoded.status);
         res.json({success: true})
     }catch(err){
         res.json({success: false, error: err});
