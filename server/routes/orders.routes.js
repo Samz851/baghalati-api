@@ -19,7 +19,7 @@
 const express = require('express');
 const router = express.Router();
 
-const ordersController = require('../controllers/clients.controller');
+const ordersController = require('../controllers/orders.controller');
 
 router.get('/activeOrders', ordersController.getActiveProducts);
 
