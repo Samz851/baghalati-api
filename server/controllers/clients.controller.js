@@ -602,7 +602,6 @@ clientsController.testUserAPI = function(req, res){
 clientsController.pushOrder = async (req, res) => {
     const { token } = req.body;
     let cart_items = [];
-    let orderObj;
     console.log('THE REQ BODY IS');
     console.log(req.body);
     var decoded = jwt.verify(token, Config.jwt.secret);
