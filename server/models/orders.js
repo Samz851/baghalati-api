@@ -18,6 +18,9 @@
 const mongoose = require('mongoose');
 const autoIncrement = require('mongoose-auto-increment');
 const { Schema } = mongoose;
+var db = mongoose.connection;
+
+autoIncrement.initialize(db);
 
 const OrderSchema = new Schema({
 

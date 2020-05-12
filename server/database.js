@@ -24,9 +24,7 @@ mongoose.connect(remote_URI, {
     useNewUrlParser: true,
     uri_decode_auth: true
 })
-    .then(db => {
-        console.log(`${remote_URI} is connected`)
-        autoIncrement.initialize(db);})
+    .then(db => console.log(`${remote_URI} is connected`))
     .catch( err => console.log(`Error en Mongo: ${err}`));
 
 module.exports = mongoose;
