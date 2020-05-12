@@ -602,10 +602,11 @@ clientsController.testUserAPI = function(req, res){
 clientsController.pushOrder = async (req, res) => {
     const { token } = req.body;
     let cart_items = [];
+    let orderObj;
     console.log('THE REQ BODY IS');
     console.log(req.body);
     var decoded = jwt.verify(token, Config.jwt.secret);
-    token.cart.map((item, i) => {
+    decoded.cart.map((item, i) => {
         cart_items.push({
             item: mongoose.Types.ObjectId(item.item),
             quantity: item.quantity,
@@ -624,7 +625,7 @@ clientsController.pushOrder = async (req, res) => {
 
     let order = new Orders(orderObj);
     try{
-        let save = order.save();
+        let save = await order.save();
         res.json({success: true})
     }catch(err){
         res.json({success: false, error: err});
