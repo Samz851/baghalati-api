@@ -45,6 +45,25 @@ ordersController.getActiveProducts = async (req, res) => {
     }
 }
 
+ordersController.updateOrderStatus = async (req, res) => {
+    const { id, status } = req.body;
+
+    try{
+        let order = await Orders.findById(id);
+        if(order){
+            order.status = status;
+            try{
+                order.save();
+                PushManager.sendOrderNotification(order.device_id, status);
+            }catch(er){
+                throw er;
+            }
+        }
+    }catch(error){
+        throw error;
+    }
+}
+
 module.exports = ordersController;
 
 /** this ends this file
