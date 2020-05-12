@@ -22,6 +22,7 @@ const router = express.Router();
 const ordersController = require('../controllers/orders.controller');
 
 router.get('/activeOrders', ordersController.getActiveProducts);
+router.post('/updateOrderStatus', ordersController.updateOrderStatus);
 
 
 module.exports = router;
