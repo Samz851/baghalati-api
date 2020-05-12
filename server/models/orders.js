@@ -16,6 +16,7 @@
 */
 
 const mongoose = require('mongoose');
+const autoIncrement = require('mongoose-auto-increment');
 const { Schema } = mongoose;
 
 const OrderSchema = new Schema({
@@ -42,5 +43,5 @@ const OrderSchema = new Schema({
     timestamps: true,
     autoIndex: true
 });
-
+OrderSchema.plugin(autoIncrement.plugin, { model: 'orders', field: 'OrderId', startAt: 9660, })
 module.exports = mongoose.model('orders', OrderSchema);
