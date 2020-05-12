@@ -27,7 +27,7 @@ const PushManager = require('../services/PushManager');
 ordersController.getActiveProducts = async (req, res) => {
     try{
         var orders = await Orders.find({
-            status: 'received'
+            status: { "$ne": 'delivered' }
         }).populate('customer_id').populate({
             path: 'checkout_items.item',
             populate: {
