@@ -175,7 +175,7 @@ ordersController.orderDetails = async (req, res) => {
     const { id } = req.query;
 
     try{
-        let orderDetails = await Orders.findById({
+        let orderDetails = await Orders.findOne({
             OrderId: id
         }).populate('customer_id').populate({
             path: 'checkout_items.item',
