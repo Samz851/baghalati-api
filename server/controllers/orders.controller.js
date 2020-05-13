@@ -150,6 +150,53 @@ ordersController.ordersFeed = async (req, res) => {
         res.write("\n\n");
       })
 }
+
+ordersController.ordersByUser = async (req, res) => {
+    const { userID } = req.query;
+
+    try{
+        let orders = await Orders.find({
+            customer_id: mongoose.Types.ObjectId(userID)
+        }).exec();
+
+        if(orders){
+            res.json({success: true, data: orders})
+        }else{
+            res.json({success: false, data: 'EMPTY'})
+        }
+    }catch(error){
+        throw error
+    }
+
+
+}
+
+ordersController.orderDetails = async (req, res) => {
+    const { id } = req.query;
+
+    try{
+        let orderDetails = await Orders.findById({
+            _id: mongoose.Types.ObjectId(save._id)
+        }).populate('customer_id').populate({
+            path: 'checkout_items.item',
+            populate: {
+            path: 'item',
+            model: 'products'
+            },
+        }).exec();
+
+        if(orderDetails){
+            res.json({success: true, order: orderDetails})
+        }else{
+            res.json({success: false, orderDetails: 'EMPTY'});
+        }
+
+    }catch(error){
+        throw error
+    }
+
+}
+
 module.exports = ordersController;
 
 /** this ends this file
