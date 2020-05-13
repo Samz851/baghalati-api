@@ -101,9 +101,14 @@ ordersController.pushOrder = async (req, res) => {
                   model: 'products'
                 },
             }).exec();
-            PushManager.sendOrderNotification(decoded.device_id, decoded.status);
-            eventEmitter.emit('new-order', save)
-            res.json({success: true})
+            try{
+                PushManager.sendOrderNotification(decoded.device_id, decoded.status);
+                eventEmitter.emit('new-order', save)
+                res.json({success: true})
+            }catch(error){
+                throw error
+            }
+
         }catch(err){
             throw err;
         }
