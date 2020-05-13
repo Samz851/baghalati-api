@@ -33,7 +33,6 @@ router.post('/paymentcard/:id', clientsController.pushPaymentCard);
 router.post('/testhello', (req, res) => {
     res.json({success: true, message: "Hello World from Client Routes"})
 });
-router.post('/order', clientsController.pushOrder);
 router.post('/addfav', clientsController.addFavorite);
 router.get('/getfav/:id', clientsController.getFavorites);
 router.get('/activate/:id', clientsController.activateClient);

@@ -23,6 +23,6 @@ const ordersController = require('../controllers/orders.controller');
 
 router.get('/activeOrders', ordersController.getActiveProducts);
 router.post('/updateOrderStatus', ordersController.updateOrderStatus);
-
+router.post('/order', ordersController.pushOrder);
 
 module.exports = router;
