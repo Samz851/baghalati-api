@@ -106,10 +106,12 @@ ordersController.pushOrder = async (req, res) => {
                 eventEmitter.emit('new-order', save)
                 res.json({success: true})
             }catch(error){
+                res.json({success: false, error: error});
                 throw error
             }
 
         }catch(err){
+            res.json({success: false, error: err});
             throw err;
         }
 
