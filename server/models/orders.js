@@ -38,7 +38,34 @@ const OrderSchema = new Schema({
     amount_total: { type: mongoose.Schema.Types.Decimal128,  required: true},
     
     delivery_time: { type: String },
-    delivery_address: { type: String },
+    delivery_address: { address:{
+        type: String,
+        required: true
+   },
+   district: {
+       type: String,
+       required: true
+   },
+   city: {
+       type: String,
+       required: true
+   },
+   geolocation: {
+       longitude:{
+       type: Number,
+       required: true,
+       min: [-180,"Less than allowed value"],
+       max: [180, "More than allowed value"]
+       },
+       latitude:{
+       type: Number,
+       required: true,
+       min: [-90, "Less than allowed value"],
+       max: [90, "More than allowed value"]
+       },
+//     required: true
+        } 
+    },
     tax_ded: { type: mongoose.Schema.Types.Decimal128, required: false, description: "tax deduction from total_amount"},
     status: { type: String, required: true}
 
