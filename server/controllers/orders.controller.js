@@ -176,7 +176,7 @@ ordersController.orderDetails = async (req, res) => {
 
     try{
         let orderDetails = await Orders.findById({
-            OrderId: mongoose.Types.ObjectId(id)
+            OrderId: id
         }).populate('customer_id').populate({
             path: 'checkout_items.item',
             populate: {
