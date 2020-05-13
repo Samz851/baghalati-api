@@ -94,15 +94,18 @@ ordersController.pushOrder = async (req, res) => {
     try{
         let save = await order.save();
         try{
-            save = save.populate('customer_id').populate({
-                path: 'checkout_items.item',
-                populate: {
-                  path: 'item',
-                  model: 'products'
-                },
-            }).exec();
+            let order = await Orders.findOne({
+                                _id: mongoose.Types.ObjectId(save._id)
+                            }).populate('customer_id').populate({
+                                path: 'checkout_items.item',
+                                populate: {
+                                path: 'item',
+                                model: 'products'
+                                },
+                            }).exec();
             try{
-                PushManager.sendOrderNotification(decoded.device_id, decoded.status);
+                PushManager.sendOrderNotification(order.device_id, order.status);
+
                 eventEmitter.emit('new-order', save)
                 res.json({success: true})
             }catch(error){
