@@ -19,18 +19,17 @@ const mongoose = require('mongoose');
 const Bcrypt = require("bcryptjs");
 const ordersController = {};
 const Orders = require('../models/orders');
+const Clients = require('../models/clients');
 const Config = require('../../config');
 const jwt = require('jsonwebtoken');
 const https = require('axios');
 const PushManager = require('../services/PushManager');
-const events = require('events');
-const eventEmitter = new events.EventEmitter();
 
 ordersController.getActiveProducts = async (req, res) => {
     try{
         var orders = await Orders.find({
             status: { "$ne": 'delivered' }
-        }).populate('customer_id').populate({
+        }).populate('customer_id').populate('').populate({
             path: 'checkout_items.item',
             populate: {
               path: 'item',
@@ -79,13 +78,23 @@ ordersController.pushOrder = async (req, res) => {
             price: item.price
         })
     })
+
+    let user = await Clients.findOne({ _id: decoded.customer }).exec();
+    console.log(`ORDER ONE ADDRESS USER IS:::: ${decoded.address._id}`);
+    user.billing_address.map(item => console.log(item._id));
+    let add = await user.billing_address.find( ( o ) => {
+        console.log(`The Order address ID is: ${o._id} and user address ID is: ${decoded.address._id}`)
+       return  o._id == decoded.address._id
+    })
+    console.log(`the address is: ${add} `);
+
     //Prepare Order Obj
     let orderObj = {
         customer_id: mongoose.Types.ObjectId(decoded.customer),
         checkout_items: cart_items,
         amount_total: decoded.total,
         delivery_time: decoded.deliveryTime,
-        delivery_address: decoded.address._id,
+        delivery_address: add,
         status: decoded.status,
         device_id: decoded.device_id
     }
@@ -105,8 +114,10 @@ ordersController.pushOrder = async (req, res) => {
                             }).exec();
             try{
                 PushManager.sendOrderNotification(order.device_id, order.status);
-
-                eventEmitter.emit('new-order', new_order)
+                console.log('EMITTING EVENT!!!!!!!!!!!!!!!!!!!!!!!!')
+                let eventEmitter = req.app.get('eventEmitter');
+                console.log(eventEmitter);
+                eventEmitter.emit('order', new_order)
                 res.json({success: true})
             }catch(error){
                 throw error
@@ -123,6 +134,7 @@ ordersController.pushOrder = async (req, res) => {
 }
 
 ordersController.ordersFeed = async (req, res) => {
+    let latestOrder;
     res.writeHead(200, {
         Connection: "keep-alive",
         "Content-Type": "text/event-stream",
@@ -130,10 +142,12 @@ ordersController.ordersFeed = async (req, res) => {
         "Access-Control-Allow-Origin": "*"
       });
 
-      eventEmitter.on('new-order', (data)=> {
-        response.write("event: new-order\n");
-        response.write(`data: ${ JSON.stringify(data)} `);
-        response.write("\n\n");
+      let eventEmitter = req.app.get('eventEmitter');
+      eventEmitter.on('order', function (data) {
+          console.log('FEEDING NEW ORDERRRRRRRRR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+        res.write("event: new-order\n");
+        res.write(`data: ${ JSON.stringify(data)} `);
+        res.write("\n\n");
       })
 }
 module.exports = ordersController;

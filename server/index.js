@@ -20,13 +20,16 @@ const app = express();
 const cors = require('cors');
 const POS = require('./pos');
 var bodyParser = require('body-parser');
+const events = require('events');
+const eventEmitter = new events.EventEmitter();
 
 const { mongoose } = require('./database');
 
 /**
  * S E T T I N G S
  */
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 3001);
+app.set('eventEmitter', eventEmitter);
 
 /** 
  * H I K E U P  A U T H
