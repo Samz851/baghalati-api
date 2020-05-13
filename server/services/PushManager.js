@@ -42,6 +42,7 @@ PushManager.sendDirectNotification = (title, body, deviceID) => {
 }
 
 PushManager.sendOrderNotification = async ( deviceID, status ) => {
+    console.log(`Order Status is: ${status} and device ID is: ${deviceID}`);
     let message = await https.post(fcmURI, {to: deviceID, data: statusBody[status]}, {headers: headers});
     
 }
