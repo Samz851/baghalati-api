@@ -94,7 +94,7 @@ ordersController.pushOrder = async (req, res) => {
     try{
         let save = await order.save();
         try{
-            let order = await Orders.findOne({
+            let new_order = await Orders.findOne({
                                 _id: mongoose.Types.ObjectId(save._id)
                             }).populate('customer_id').populate({
                                 path: 'checkout_items.item',
@@ -106,7 +106,7 @@ ordersController.pushOrder = async (req, res) => {
             try{
                 PushManager.sendOrderNotification(order.device_id, order.status);
 
-                eventEmitter.emit('new-order', save)
+                eventEmitter.emit('new-order', new_order)
                 res.json({success: true})
             }catch(error){
                 throw error
@@ -122,6 +122,20 @@ ordersController.pushOrder = async (req, res) => {
     // res.json({success: true, order: decoded})
 }
 
+ordersController.ordersFeed = async (req, res) => {
+    res.writeHead(200, {
+        Connection: "keep-alive",
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        "Access-Control-Allow-Origin": "*"
+      });
+
+      eventEmitter.on('new-order', (data)=> {
+        response.write("event: new-order\n");
+        response.write(`data: ${ JSON.stringify(data)} `);
+        response.write("\n\n");
+      })
+}
 module.exports = ordersController;
 
 /** this ends this file

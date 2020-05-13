@@ -18,14 +18,14 @@ const statusBody = {
         "key_1" : "Value 1",
         "key_2" : "Value 1"
     },
-    processing : {
-        "body" : "تم اعداد طلب وهو قيد التوصيل",
+    onroute: {
+        "body" : "طلبك في الطريق ترقب وصوله",
         "title": "طلب جديد",
         "key_1" : "Value 1",
         "key_2" : "Value 1"
     },
-    delivering: {
-        "body" : "طلبك في الطريق ترقب وصوله",
+    delivered: {
+        "body" : "تم توصيل طلبك بنجاح",
         "title": "طلب جديد",
         "key_1" : "Value 1",
         "key_2" : "Value 1"
