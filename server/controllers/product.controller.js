@@ -36,7 +36,7 @@ productController.getProducts = async (req, res) => {
             let products = await Product.find(query, null, config);
             if(products){
                 products.forEach(( item ) => {
-                    item.primary_image = 'http://localhost:3200/uploads/products/' + item.sku + '.jpg';
+                    item.primary_image = 'https://api.jubnawebaith.com/uploads/products/' + item.sku + '.jpg';
                 });
                 res.json({success: true, result: products, total: count});
             }else{
@@ -58,7 +58,7 @@ productController.getProductsByIDs = async (req, res) => {
             let products = await Product.find({'_id': { $in: ids }}).exec();
             if(products){
                 products.forEach(( item ) => {
-                    item.primary_image = 'http://localhost:3200/uploads/products/' + item.sku + '.jpg';
+                    item.primary_image = 'https://api.jubnawebaith.com/uploads/products/' + item.sku + '.jpg';
                 });
                 res.json({success: true, favorites: products});
             }else{
@@ -215,7 +215,7 @@ productController.getProduct = async (req, res) => {
     try{
         const product = await Product.findById(id).populate('product_tags').populate('product_type').exec();
         if(product){
-            product.primary_image = 'http://localhost:3200/uploads/products/' + product.sku + '.jpg';
+            product.primary_image = 'https://api.jubnawebaith.com/uploads/products/' + product.sku + '.jpg';
         }
         res.json({success: true, product: product});
     }catch(err){
