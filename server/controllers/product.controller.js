@@ -126,7 +126,7 @@ productController.editProduct = async (req, res) => {
     // const { id } = req.params;
     const { _id, name, name_ar, sku, description} = req.body;
 
-    const form = formidable({ uploadDir: 'D:\\Desktop\\WORK\\tmp' });
+    // const form = formidable({ uploadDir: 'D:\\Desktop\\WORK\\tmp' });
 
     //PRODUCTION
     // const form = formidable();
