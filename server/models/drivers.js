@@ -1,12 +1,12 @@
 /**
- * Name: clients
+ * Name: drivers
  *
  * @author Samer Alotaibi
  *		  sam@samiscoding.com
  *
  *
  *
- * Description: Admin data model
+ * Description: drivers data model
  *
  * Requirements: mongoose
  *
@@ -21,11 +21,14 @@ const uniqueValidator = require('mongoose-unique-validator');
 
 const { Schema } = mongoose;
 
-const AdminSchema = new Schema({
-    admin_id: {
+const DriverSchema = new Schema({
+    driver_id: {
         type:mongoose.Schema.Types.ObjectId,
         unique: true,
         required: true,
+    },
+    name: {
+        type: String
     },
     email: {
         type: String,
@@ -36,6 +39,9 @@ const AdminSchema = new Schema({
         type: String,
         unique: true,
         required: true,
+    },
+    phone: {
+        type: String
     },
     password: {
         type: String,
@@ -51,39 +57,19 @@ const AdminSchema = new Schema({
         type: String
     },
 
-    pos_data: {
-        access_token: {
-            type: String
-        },
-        token_type: {
-            type: String
-        },
-        expires: {
-            type: Number
-        },
-        expires_in: {
-            type: Number
-        },
-        refresh_token: {
-            type: String
-        }
-    },
-    is_connected: {
-        type: Boolean,
-        default: 'false'
-    },
-    phone: {
-        type: String
-    }
+    orders: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'orders'
+    }],
 }, {
     
     timestamps: true,
     autoIndex: true
 });
 
-AdminSchema.plugin(uniqueValidator);
+DriverSchema.plugin(uniqueValidator);
 
-module.exports = mongoose.model('admins', AdminSchema);
+module.exports = mongoose.model('drivers', DriverSchema);
 
 
 

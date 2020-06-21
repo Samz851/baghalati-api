@@ -20,6 +20,10 @@ const productController = {};
 const Product = require('../models/products');
 const Tags = require('../models/tags');
 const Categories = require('../models/categories');
+const fs = require('fs');
+const formidable = require('formidable');
+const products = require('../models/products');
+
 
 productController.getProducts = async (req, res) => {
     const { page, offset, limit, cat } = req.query;
@@ -32,7 +36,7 @@ productController.getProducts = async (req, res) => {
             let products = await Product.find(query, null, config);
             if(products){
                 products.forEach(( item ) => {
-                    item.primary_image = 'https://api.jubnawebaith.com/uploads/products/' + item.name.replace(/ /g, '-') + '.jpg';
+                    item.primary_image = 'http://localhost:3200/uploads/products/' + item.sku + '.jpg';
                 });
                 res.json({success: true, result: products, total: count});
             }else{
@@ -54,7 +58,7 @@ productController.getProductsByIDs = async (req, res) => {
             let products = await Product.find({'_id': { $in: ids }}).exec();
             if(products){
                 products.forEach(( item ) => {
-                    item.primary_image = 'https://api.jubnawebaith.com/uploads/products/' + item.name.replace(/ /g, '-') + '.jpg';
+                    item.primary_image = 'http://localhost:3200/uploads/products/' + item.sku + '.jpg';
                 });
                 res.json({success: true, favorites: products});
             }else{
@@ -119,28 +123,67 @@ productController.createProduct = async (req, res) => {
 };
 
 productController.editProduct = async (req, res) => {
-    const { id } = req.params;
+    // const { id } = req.params;
+    const { _id, name, name_ar, sku, description} = req.body;
 
-    const product = {
-        code: req.body.code,
-        description: req.body.description,
-        size: req.body.size,
-        weight: req.body.weight,
-        price: req.body.price,
-        discount: req.body.discount,
-        on_sale: req.body.on_sale,
-        active: req.body.active,
-        stock: req.body.stock,
-        broken_stock: req.body.broken_stock,
-        to_serve: req.body.to_serve,
-        to_receive: req.body.to_receive,
-        ubication: req.body.ubication,
-        images: req.body.images
-    };
+    const form = formidable({ uploadDir: 'D:\\Desktop\\WORK\\tmp' });
 
-    await Product.findByIdAndUpdate(id, {$set: product}, {new: true});
+    //PRODUCTION
+    // const form = formidable();
 
-    res.json({"status":"200"});
+    form.parse(req, (err, fields, files) => {
+        let product = Product.findById(fields._id, (err, prod) => {
+            if(files.file){
+                var oldpath = files.file.path;
+                var oldFile = `${__dirname}/../uploads/products/${prod.sku}.jpg`;
+                if (fs.existsSync(oldFile)) {
+                    //file exists
+                    fs.unlinkSync(oldFile);
+                  }
+                var newpath = `${__dirname}/../uploads/products/${prod.sku}${files.file.name.substr(files.file.name.lastIndexOf('.') + 1)}`;
+                fs.rename(oldpath, newpath, function (err) {
+                  if (err) throw err;
+                  res.end();
+                });
+            }
+            const {name, name_ar, description} = fields;
+            if(name){
+                prod.name = name;
+            }
+            if(name_ar){
+                prod.name_ar = name_ar;
+            }
+            if(description){
+                prod.description = description;
+            }
+            prod.save();
+            res.json({success: true, message: 'Product Updated'});
+            // product.save();
+        })
+
+    });
+    // const product = {
+    //     code: req.body.code,
+    //     description: req.body.description,
+    //     size: req.body.size,
+    //     weight: req.body.weight,
+    //     price: req.body.price,
+    //     discount: req.body.discount,
+    //     on_sale: req.body.on_sale,
+    //     active: req.body.active,
+    //     stock: req.body.stock,
+    //     broken_stock: req.body.broken_stock,
+    //     to_serve: req.body.to_serve,
+    //     to_receive: req.body.to_receive,
+    //     ubication: req.body.ubication,
+    //     images: req.body.images
+    // };
+
+    // await Product.findByIdAndUpdate(id, {$set: product}, {new: true});
+    // res.header("Access-Control-Allow-Origin", "*");
+    // res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    // res.header("Content-Type", 'application/json');
+    // res.json(JSON.stringify(req.body));
 };
 
 productController.getActives = async (req, res) => {
@@ -172,7 +215,7 @@ productController.getProduct = async (req, res) => {
     try{
         const product = await Product.findById(id).populate('product_tags').populate('product_type').exec();
         if(product){
-            product.primary_image = 'https://api.jubnawebaith.com/uploads/products/' + product.name.replace(/ /g, '-') + '.jpg'
+            product.primary_image = 'http://localhost:3200/uploads/products/' + product.sku + '.jpg';
         }
         res.json({success: true, product: product});
     }catch(err){
@@ -225,6 +268,17 @@ productController.addImage = async (req, res) => {
     });
     
 };
+
+productController.setProductImages = async (req, res) => {
+    let products = await Product.find({}).select('name sku');
+
+    products.forEach(product => {
+        fs.rename(`${__dirname}/../uploads/products/${product.name.replace(/ /g, '-')}.jpg`, `${__dirname}/../uploads/products/${product.sku}.jpg`, function(err) {
+            if ( err ) console.log('ERROR: ' + err);
+        });
+    })
+    res.json(products);
+}
 
 productController.brokenStock = async (req, res) => {
     const broken = await Product.find( { $where: "this.broken_stock >= this.stock" } );

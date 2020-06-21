@@ -20,6 +20,7 @@ const Bcrypt = require("bcryptjs");
 const adminsController = {};
 const Admins = require('../models/admins');
 const Options = require('../models/options');
+const Drivers = require('../models/drivers');
 const Config = require('../../config');
 const jwt = require('jsonwebtoken');
 const https = require('axios');
@@ -28,25 +29,35 @@ const { v1 } = require('uuid');
 
 
 adminsController.register = async (req, res) => {
-   const { email, password, secret } = req.body;
+   const { email, password, secret, phone, name, username, userType } = req.body;
 
    if(secret == 'Freaky'){
-       let admin_id = mongoose.Types.ObjectId();
+       let user;
        let encrypt_password = Bcrypt.hashSync(password, 10);
-       let username = email.split('@')[0];
-       const admin = new Admins({admin_id: admin_id, email: email, username: username, password: encrypt_password});
-       let user = await admin.save();
-       res.json({success: true, message: 'registration successful'})
+       if(userType == 'admin'){
+        let admin_id = mongoose.Types.ObjectId();
+        user = new Admins({admin_id: admin_id, email: email, username: username, password: encrypt_password, phone: phone, name: name});
+       }
+       if(userType == 'driver'){
+           let driver_id = mongoose.Types.ObjectId();
+           user = new Drivers({driver_id: driver_id, email: email, username: username, password: encrypt_password, phone: phone, name: name});
+       }
+       try{
+        await user.save();
+        res.json({success: true, message: 'registration successful'})
+       }catch(e){
+        res.json({success: false, message: 'registration failed'});
+       }
 
    }
    
 }
 
 adminsController.login = async (req, res) => {
-    const { username, password, secret} = req.body;
+    const { username, password, secret, type} = req.body;
 
     if(secret == 'Freaky'){
-        let user = await Admins.findOne({username: username}).exec();
+        let user = type == 'admin' ? await Admins.findOne({username: username}).exec() : await Drivers.findOne({username: username}).exec();
         if(!user){
             return res.status(400).send({
                 success: false,
@@ -62,7 +73,7 @@ adminsController.login = async (req, res) => {
             user.session_id = v1();
             let success = await user.save();
             if(success){
-                res.json({success: true, session: user.session_id, store_status: user.is_connected});
+                res.json({success: true, session: user.session_id, store_status: user.is_connected, type: type});
             }else{
                 res.json({success: false, message: 'Failed to generate session token'})
             }
@@ -156,6 +167,38 @@ adminsController.updateDeliveryFee = async (req, res) => {
 
 }
 
+adminsController.getUsers = async (req, res) => {
+    let users = [];
+    let drivers = await Drivers.find({});
+    drivers.forEach( (driver) => {
+        let user_drv = {...driver._doc};
+        user_drv.userType = 'driver';
+        users.push(user_drv);
+    });
+    let admins = await Admins.find({});
+    admins.forEach( (admin) => {
+        let user_adm = {...admin._doc};
+        user_adm.userType = 'admin';
+        users.push(user_adm)
+    })
+    res.json({users: users, success: true});
+}
+
+adminsController.deleteUser = async (req, res) => {
+    console.log('HITTTT');
+    const { userID, secret } = req.body;
+    console.log(`${userID} :: ${secret}`);
+    if(userID && secret == 'Freaky'){
+        try{
+            let user = await Drivers.deleteOne({_id: userID});
+            res.json({success: true})
+        }catch(e){
+            res.json({success: false});
+            throw e;
+        }
+
+    }
+}
 module.exports = adminsController;
 
 /** this ends this file

@@ -18,7 +18,7 @@
 
 const express = require('express');
 const router = express.Router();
-var multer  = require('multer')
+var multer  = require('multer');
 const cors = require('cors');
 
 var storage = multer.diskStorage({
@@ -41,6 +41,8 @@ router.get('/getBanners', adminsController.getBanners);
 router.get('/deleteBanners', adminsController.deleteBanners);
 router.post('/deliveryFee', adminsController.updateDeliveryFee);
 router.get('/deliveryFee', adminsController.getDeliveryFee);
+router.get('/getUsers', adminsController.getUsers);
+router.post('/deleteUser', adminsController.deleteUser);
 
 module.exports = router;
 /** this ends this file

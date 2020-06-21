@@ -17,8 +17,10 @@
 
 const express = require('express');
 const router = express.Router();
+const cors = require('cors');
 
 const productsController = require('../controllers/product.controller');
+const productController = require('../controllers/product.controller');
 
 router.get('/', productsController.getProducts);
 router.get('/getTags', productsController.getTags);
@@ -33,11 +35,13 @@ router.get('/activate/:id', productsController.activateProduct);
 router.get('/deactivate/:id', productsController.deactivateProduct);
 // router.post('/arabizeTags', productsController.arabizeTags);
 
-router.put('/:id', productsController.editProduct);
+router.post('/editProduct', cors({origin: '*'}), productsController.editProduct);
 router.put('/addimage/:id', productsController.addImage);
 
 router.post('/', productsController.createProduct);
 router.post('/getProductsByIDs', productsController.getProductsByIDs);
+router.post('/setProductImages', productController.setProductImages);
+
 
 router.delete('/:id', productsController.deleteProduct);
 

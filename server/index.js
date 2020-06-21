@@ -28,7 +28,7 @@ const { mongoose } = require('./database');
 /**
  * S E T T I N G S
  */
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 3200);
 app.set('eventEmitter', eventEmitter);
 
 /** 
@@ -47,6 +47,15 @@ app.use(bodyParser.urlencoded({
     extended: true
   }));
 app.use('/uploads', express.static(__dirname + '/uploads'));
+// app.use(function(req, res, next) {
+
+//   res.header("Access-Control-Allow-Origin", "*");
+
+//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
+//   next();
+
+// });
 app.get('/', (req, res, err) => {
   res.json({message: 'Welcome to Jubna We Baith API v1'})
 })
@@ -55,7 +64,7 @@ app.get('/', (req, res, err) => {
 /**
  * R O U T E S
  */ 
-app.use('/v1/products', require('./routes/product.routes'));
+app.use('/v1/products', cors({origin: '*'}), require('./routes/product.routes'));
 app.use('/v1/clients', require('./routes/clients.routes'));
 app.use('/v1/suppliers', require('./routes/suppliers.routes'));
 app.use('/v1/categories', require('./routes/categories.routes'));
