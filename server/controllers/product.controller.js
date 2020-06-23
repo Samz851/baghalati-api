@@ -70,7 +70,8 @@ productController.getProductsByIDs = async (req, res) => {
     }else{
         
     }
-}
+};
+
 productController.getTags = async (req, res) => {
     let tags = await Tags.find({});
     if(tags){
@@ -81,7 +82,7 @@ productController.getTags = async (req, res) => {
     }else{
         res.json({success: false})
     }
-}
+};
 
 // productController.arabizeTags = async (req, res) => {
 //     const { array } = req.body;
@@ -278,14 +279,13 @@ productController.setProductImages = async (req, res) => {
         });
     })
     res.json(products);
-}
+};
 
 productController.brokenStock = async (req, res) => {
     const broken = await Product.find( { $where: "this.broken_stock >= this.stock" } );
 
     res.json(broken);
 };
-    
 
 module.exports = productController;
 

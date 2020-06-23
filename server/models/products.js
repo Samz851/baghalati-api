@@ -24,7 +24,7 @@ const productSchema = new Schema(
         name:{type: String, required: true},
         name_ar: {type: String}, 
         description:{type: String, required: true},
-        sku:{ type: Number, required: true },
+        sku:{ type: Number, required: true, unique: true },
         primary_image:{type: String},
         bran_name:{type: String, required: true},
         supplier_code:{type: String},

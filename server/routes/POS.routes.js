@@ -25,6 +25,8 @@ router.get('/hikeup-redirect', POSController.redirect );
 router.get('/refreshToken', POSController.refreshToken);
 router.get('/getProducts', POSController.getProducts);
 router.post('/syncPOS', POSController.syncInventory);
+router.get('/fetchNewProducts/:ID', POSController.fetchNewProducts);
+router.get('/updateLocalProducts/:ID', POSController.updateLocalProducts);
 
 module.exports = router;
 /** this ends this file

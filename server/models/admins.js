@@ -66,6 +66,9 @@ const AdminSchema = new Schema({
         },
         refresh_token: {
             type: String
+        },
+        lastUpdate: {
+            type: Date
         }
     },
     is_connected: {

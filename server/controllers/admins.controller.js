@@ -71,9 +71,20 @@ adminsController.login = async (req, res) => {
             });
         }else{
             user.session_id = v1();
+            let user_is_connected;
+            try{
+                let products = await https.get('https://api.hikeup.com/api/v1/products/get_all?page_size=1&Skip_count=0', {headers: {
+                    'Authorization': 'Bearer ' + user.pos_data.access_token
+                }});
+                user_is_connected = true;
+
+            }catch(e){
+                user_is_connected = user.is_connected = false;
+            }
+
             let success = await user.save();
             if(success){
-                res.json({success: true, session: user.session_id, store_status: user.is_connected, type: type});
+                res.json({success: true, session: user.session_id, store_status: user_is_connected, type: type});
             }else{
                 res.json({success: false, message: 'Failed to generate session token'})
             }
@@ -100,9 +111,19 @@ adminsController.verifySID = async (req, res) => {
         });
     }else{
         user.session_id = v1();
+        let user_is_connected;
+        try{
+            let products = await https.get('https://api.hikeup.com/api/v1/products/get_all?page_size=1&Skip_count=0', {headers: {
+                'Authorization': 'Bearer ' + user.pos_data.access_token
+            }});
+            user_is_connected = true;
+
+        }catch(e){
+            user_is_connected = user.is_connected = false;
+        }
         let success = await user.save();
         if(success){
-            res.json({success: true, session: user.session_id});
+            res.json({success: true, session: user.session_id, store_status: user_is_connected});
         }else{
             res.json({success: false, message: 'Failed to generate session token'})
         }

@@ -35,6 +35,43 @@ const get_product_types_uri = 'https://api.hikeup.com/api/v1/product_types/get_a
 const authorizeURI = (user_token) => {
     return `https://api.hikeup.com/oauth/authorize?response_type=code&client_id=${client_id}&redirect_uri=${redirect_uri}&state=${user_token}&scope=all`;
 }
+
+const getProducts = async (parameters, results, config, cb) =>{
+  console.log('Initial Arr');
+  console.log(results.length);
+  try{
+    let products = await https.get(get_products_uri + '?page_size=' + parameters.page_size + '&Skip_count=' + parameters.Skip_count, config);
+
+    if(products.data.items){
+      console.log('HIT!!!!');
+      results = results.concat(products.data.items);
+      parameters.Skip_count += 20;
+      console.log('length so far!!!');
+      console.log(results.length);
+    }
+    console.log(products.data.next);
+    if(products.data.next !== null){
+      console.log('doing it again');
+      try{
+        await getProducts(parameters, results, config, cb);
+      }catch(e){
+        console.log(e);
+      }
+
+    }
+    else{
+      console.log('tota products results!!!!!');
+      console.log(results.length);
+      cb(results);
+      return results;
+    }
+  }catch(e){
+    console.log(e)
+    // throw e.response.status;
+  }
+
+  
+}
 var origURL = '';
 
 
@@ -133,9 +170,11 @@ POSController.refreshToken = async (req, res) => {
 }
 
 POSController.getProducts = async (req, res) => {
+  console.log('This is something');
   const { page, id } = req.query;
 
   let user = await Admins.findOne({session_id: id}, 'pos_data');
+
   if(user){
     //Try fetching
     const config = {
@@ -150,8 +189,6 @@ POSController.getProducts = async (req, res) => {
 
     try {
       let products = await https.get(get_products_uri + '?page_size=' + params.page_size + '&Skip_count=' + params.Skip_count, config);
-      console.log('Products result!!!!!!!!!!');
-      console.log(products);
       if(products.data.items){
         res.json({
           success: true,
@@ -162,16 +199,15 @@ POSController.getProducts = async (req, res) => {
       }
 
     } catch(error) {
-      console.log("products Error!!!!");
-      console.log(error);
       if(error){
         res.json({
           success: false,
-          error: error
+          error: error.response.status
         })
       }
     }
-    
+  }else{
+    res.json({success: false, message: 'User not found'});
   }
 
 }
@@ -226,27 +262,6 @@ POSController.syncInventory = async (req, res) => {
       res.json({success: false, line: 222});
     }
     let results = [];
-    async function getProducts(parameters){
-      let products = await https.get(get_products_uri + '?page_size=' + parameters.page_size + '&Skip_count=' + parameters.Skip_count, config);
-
-      if(products.data.items){
-        console.log('HIT!!!!');
-        results = results.concat(products.data.items);
-        parameters.Skip_count += 20;
-        console.log('length so far!!!');
-        console.log(results.length);
-      }
-      console.log(products.data.next);
-      if(products.data.next !== null){
-        await getProducts(parameters)
-      }
-      else{
-        console.log('tota products results!!!!!');
-        console.log(results.length)
-        return results;
-      }
-
-    }
 
     try{
       let parameters= {
@@ -255,8 +270,7 @@ POSController.syncInventory = async (req, res) => {
       }
 
       let products = await getProducts(parameters);
-      console.log('Products Results!!!!!!!!!');
-      console.log(results.length);
+
 
       // let tag, category;
       results.forEach(async (product) => {
@@ -277,11 +291,6 @@ POSController.syncInventory = async (req, res) => {
           console.log('Error fetching category');
           console.log(error);
         }
-
-        console.log('CAT!!!!!!!!!!!!!!!!!!');
-        console.log(category._id);
-        console.log('TAG');
-        console.log(tag._id);
 
         let obj = {
           parentId: product.parentId,
@@ -320,6 +329,186 @@ POSController.syncInventory = async (req, res) => {
   }
 
   //fetch products
+}
+
+POSController.fetchNewProducts = async (req, res) => {
+  console.log('UPDATING INVENTORY')
+  const { ID } = req.params;
+
+  let user = await Admins.findOne({session_id: ID});
+
+  let inventory = await Products.find({}).select('sku -_id');
+  let localInventory = inventory.map(pro => pro.sku);
+
+  let results = [];
+  let parameters= {
+    page_size: 20,
+    Skip_count: 0 
+  }
+
+  const config = {
+    headers: {
+      'Authorization': 'Bearer ' + user.pos_data.access_token
+    } 
+  }
+
+  let updateArr = [];
+
+  try{
+    let products = await getProducts(parameters, results, config, function(d){results = d;});
+    console.log('RESULT IS::::::');
+    console.log(results.length);
+    if(results.length > 0){
+      results.forEach(item => {
+        if(!localInventory.includes(parseInt(item.sku))){
+          updateArr.push(item);
+        }
+      })
+    }
+
+    if(updateArr.length > 0){
+      updateArr.forEach( async (prod) => {
+        console.log('Product is::::');
+        console.log(prod.product_type[0].type_name);
+
+        let prodCat = prod.product_type[0].type_name;
+        let tagName = prod.product_tags[0].name;
+        let CatExist = await Categories.find({name: prodCat});
+        let catID, tagID;
+        let TagExist = await Tags.find({name: tagName});
+        console.log(CatExist.length);
+        if(CatExist.length == 0 ){
+          console.log(prodCat);
+          let nCat = new Categories({name: prodCat, description: '', isActive: true, id: prod.product_type[0].type_id});
+          nCat = await nCat.save();
+          catID = nCat._id;
+          console.log(nCat._id);
+        }else{
+          catID = CatExist._id;
+        }
+
+        if(TagExist.length == 0){
+          let tagM = new Tags({name: tagName});
+          await tagM.save();
+          tagID = tagM._id;
+        }else{
+          tagID = TagExist._id;
+        }
+        let obj = {
+          parentId: prod.parentId,
+          name: prod.name,
+          description: prod.description,
+          sku: prod.sku,
+          primary_image: prod.primary_image,
+          bran_name: prod.bran_name,
+          product_tags:[tagID],
+          product_type:[catID],
+          price: { 
+              price_ex_tax: prod.product_outlets[0].price_ex_tax,
+              tax_rate:prod.product_outlets[0].tax_rate,
+              price_inc_tax:prod.product_outlets[0].price_inc_tax,
+          },
+          isActive: prod.isActive,
+        }
+        
+        try{
+          let nProduct = new Products({...obj});
+          await nProduct.save();
+          res.json({success: true, message: `Successfully updated ${updateArr.length} new products`});
+        }catch(error){
+          console.log('Error saving product');
+          console.log(error);
+          res.json({success: false, message: 'Error saving product'});
+        }
+      })
+    }
+  }catch(e){
+    console.log( e );
+    res.json({succesS: false, message: e});
+  }
+
+
+  // results.forEach
+
+
+}
+
+POSController.updateLocalProducts = async (req, res) => {
+  console.log('UPDATING INVENTORY')
+  const { ID } = req.params;
+
+  let user = await Admins.findOne({session_id: ID});
+
+  let inventory = await Products.find({}).select('sku -_id');
+  let localInventory = inventory.map(pro => pro.sku);
+
+  let results = [];
+  let parameters= {
+    page_size: 20,
+    Skip_count: 0,
+    Sync_From: user.pos_data.lastUpdate
+  }
+
+  const config = {
+    headers: {
+      'Authorization': 'Bearer ' + user.pos_data.access_token
+    } 
+  }
+
+  let updateArr = [];
+
+  try{
+    let products = await getProducts(parameters, results, config, function(d){results = d;});
+    // console.log('RESULT IS::::::');
+    // console.log(results);
+    res.json({success: true, results: results});
+    if(results.length > 0){
+      results.forEach( async (prod) => {
+        let prodCat = prod.product_type[0].type_name;
+        let tagName = prod.product_tags[0].name;
+        let CatExist = await Categories.find({name: prodCat});
+        let catID, tagID;
+        let TagExist = await Tags.find({name: tagName});
+        if(CatExist.length == 0 ){
+          let nCat = new Categories({name: prodCat, description: '', isActive: true, id: prod.product_type[0].type_id});
+          nCat = await nCat.save();
+          catID = nCat._id;
+        }else{
+          catID = CatExist._id;
+        }
+
+        if(TagExist.length == 0){
+          let tagM = new Tags({name: tagName});
+          await tagM.save();
+          tagID = tagM._id;
+        }else{
+          tagID = TagExist._id;
+        }
+        let obj = {
+          bran_name: prod.bran_name,
+          product_tags:[tagID],
+          product_type:[catID],
+          price: { 
+              price_ex_tax: prod.product_outlets[0].price_ex_tax,
+              tax_rate:prod.product_outlets[0].tax_rate,
+              price_inc_tax:prod.product_outlets[0].price_inc_tax,
+          },
+          isActive: prod.isActive,
+        }
+        
+        try{
+          let nProduct = await Products.findOneAndUpdate({sku: parseInt(prod.sku)}, {$set: {...obj}});
+        }catch(error){
+          res.json({success: false, message: 'Error saving product'});
+        }
+      });
+      res.json({success: true, message: `Successfully updated ${updateArr.length} new products`});
+    }
+
+  }catch(e){
+    res.json({succesS: false, message: e});
+  }
+
 }
 
 module.exports = POSController;
