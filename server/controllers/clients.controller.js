@@ -437,7 +437,7 @@ clientsController.clientAuthentication = async (req,res) =>{
     console.log(req.body)
     try{
         var user = await Clients.findOne({
-                contact_email: req.body.contact_email
+                contact_no: req.body.contact_no
             }).exec();
         // console.log("User: "+ user);
         
