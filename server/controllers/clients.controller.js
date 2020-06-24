@@ -439,7 +439,7 @@ clientsController.clientAuthentication = async (req,res) =>{
         var user = await Clients.findOne({
                 contact_no: req.body.contact_no
             }).exec();
-        // console.log("User: "+ user);
+        console.log(user);
         
         if (!user) {
             return res.status(400).send({
