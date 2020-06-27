@@ -472,6 +472,7 @@ clientsController.clientAuthentication = async (req,res) =>{
                 address: user.billing_address,
                 sub_accounts: user.sub_accounts,
                 favorites: user.favorites,
+                gender: user.gender || '',
                 sid: user.session_id
             }, Config.jwt.secret);
             var decoded = jwt.verify(token, Config.jwt.secret);
@@ -518,6 +519,7 @@ clientsController.getClient = async (req, res) => {
                 address: user.billing_address,
                 sub_accounts: user.sub_accounts,
                 favorites: user.favorites,
+                gender: user.gender || '',
                 sid: user.session_id
             }, Config.jwt.secret);
             var decoded = jwt.verify(token, Config.jwt.secret);
