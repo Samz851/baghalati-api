@@ -145,19 +145,20 @@ clientsController.sendActivationLink = async (req, res) => {
 }
 
 clientsController.editClientSimpleData = async (req, res) => {
-    const { id } = req.params;
+    const { session_id } = req.body;
     
-    let cliente = await Clients.findById(id);
+    let cliente = await Clients.findOne({session_id: session_id});
 
-
-   cliente.full_name = req.body.full_name;
-   cliente.contact_email = cliente.contact_email;
-   cliente.billing_address = cliente.billing_address;
-   cliente.contact_no = cliente.contact_no;
+    
+   cliente.full_name = req.body.name;
+   cliente.contact_email = req.body.email;
+   cliente.contact_no = req.body.phone;
+   cliente.gender = req.body.gender;
+   cliente.date_of_birth = req.body.dob
 
     await cliente.save()
         .then( () => {
-            res.json({ "status": "200"});
+            res.json({ success: true, message: 'Information Updated'});
         } );
 
 };

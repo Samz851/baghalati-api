@@ -138,6 +138,9 @@ const ClientSchema = new Schema({
 
         required: false
     }],
+    gender: {
+        type: String
+    },
     orders: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'orders'
