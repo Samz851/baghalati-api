@@ -157,7 +157,7 @@ ordersController.ordersByUser = async (req, res) => {
     try{
         let orders = await Orders.find({
             customer_id: mongoose.Types.ObjectId(userID)
-        }).exec();
+        }).populate('item').exec();
 
         if(orders){
             res.json({success: true, data: orders})

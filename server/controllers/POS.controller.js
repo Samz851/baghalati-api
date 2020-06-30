@@ -24,6 +24,7 @@ const Admins = require('../models/admins');
 const Products = require('../models/products');
 const Categories = require('../models/categories');
 const Tags = require('../models/tags');
+const mongoose = require('mongoose');
 const tokenURI = 'https://api.hikeup.com/oauth/token';
 const authURI = 'https://api.hikeup.com/oauth/authorize';
 const client_id =  'baghalati-1be96a0e45';
@@ -37,8 +38,8 @@ const authorizeURI = (user_token) => {
 }
 
 const getProducts = async (parameters, results, config, cb) =>{
-  console.log('Initial Arr');
-  console.log(results.length);
+  // console.log('Initial Arr');
+  // console.log(results.length);
   try{
     let products = await https.get(get_products_uri + '?page_size=' + parameters.page_size + '&Skip_count=' + parameters.Skip_count, config);
 
@@ -55,7 +56,7 @@ const getProducts = async (parameters, results, config, cb) =>{
       try{
         await getProducts(parameters, results, config, cb);
       }catch(e){
-        console.log(e);
+        throw e;
       }
 
     }
@@ -66,7 +67,8 @@ const getProducts = async (parameters, results, config, cb) =>{
       return results;
     }
   }catch(e){
-    console.log(e)
+    
+    throw e;
     // throw e.response.status;
   }
 
@@ -436,7 +438,7 @@ POSController.fetchNewProducts = async (req, res) => {
 POSController.updateLocalProducts = async (req, res) => {
   console.log('UPDATING INVENTORY')
   const { ID } = req.params;
-
+   
   let user = await Admins.findOne({session_id: ID});
 
   let inventory = await Products.find({}).select('sku -_id');
@@ -461,19 +463,22 @@ POSController.updateLocalProducts = async (req, res) => {
     let products = await getProducts(parameters, results, config, function(d){results = d;});
     // console.log('RESULT IS::::::');
     // console.log(results);
-    res.json({success: true, results: results});
     if(results.length > 0){
       results.forEach( async (prod) => {
         let prodCat = prod.product_type[0].type_name;
         let tagName = prod.product_tags[0].name;
-        let CatExist = await Categories.find({name: prodCat});
+        let CatExist = await Categories.findOne({name: prodCat});
         let catID, tagID;
-        let TagExist = await Tags.find({name: tagName});
+        let TagExist = await Tags.findOne({name: tagName});
+        
         if(CatExist.length == 0 ){
           let nCat = new Categories({name: prodCat, description: '', isActive: true, id: prod.product_type[0].type_id});
           nCat = await nCat.save();
           catID = nCat._id;
         }else{
+          console.log('Check this!!!');
+          // console.log(CatExist);
+          console.log(CatExist._id);
           catID = CatExist._id;
         }
 
@@ -482,12 +487,13 @@ POSController.updateLocalProducts = async (req, res) => {
           await tagM.save();
           tagID = tagM._id;
         }else{
+          console.log(TagExist);
           tagID = TagExist._id;
         }
         let obj = {
           bran_name: prod.bran_name,
-          product_tags:[tagID],
-          product_type:[catID],
+          product_tags:[mongoose.Types.ObjectId(tagID)],
+          product_type:[mongoose.Types.ObjectId(catID)],
           price: { 
               price_ex_tax: prod.product_outlets[0].price_ex_tax,
               tax_rate:prod.product_outlets[0].tax_rate,
@@ -495,7 +501,7 @@ POSController.updateLocalProducts = async (req, res) => {
           },
           isActive: prod.isActive,
         }
-        
+        console.log(`Product Category Name is:${tagID} and ${catID}`);
         try{
           let nProduct = await Products.findOneAndUpdate({sku: parseInt(prod.sku)}, {$set: {...obj}});
         }catch(error){
@@ -506,7 +512,7 @@ POSController.updateLocalProducts = async (req, res) => {
     }
 
   }catch(e){
-    res.json({succesS: false, message: e});
+    res.json({success: false, message: e.message});
   }
 
 }
