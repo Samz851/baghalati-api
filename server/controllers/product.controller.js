@@ -23,6 +23,7 @@ const Categories = require('../models/categories');
 const fs = require('fs');
 const formidable = require('formidable');
 const excelToJson = require('convert-excel-to-json');
+const { json } = require('express');
 
 productController.getProducts = async (req, res) => {
     const { page, offset, limit, cat } = req.query;
@@ -271,17 +272,36 @@ productController.addImage = async (req, res) => {
 };
 
 productController.setProductImages = async (req, res) => {
-    let products = await Product.find({}).select('name barcode sku');
+    // let products = await Product.find({}).select('name barcode sku');
 
-    products.forEach(product => {
-        fs.rename(`${__dirname}/../uploads/products/${product.barcode}.${/\.(jpg|jpeg|png|jfif)/}`, `${__dirname}/../uploads/products/${product.sku}.jpg`, function(err) {
-            if ( err ) {
-                res.json({success: false, error: err});
-            }else{
-                res.json({success: true, message: 'Product Images fixed'});
-            }
-        });
-    })
+    // products.forEach(product => {
+    //     fs.rename(`${__dirname}/../uploads/products/${product.barcode + /(.jpg|.jpeg|.png|.jfif)/}`, `${__dirname}/../uploads/products/${product.sku}.jpg`, function(err) {
+    //         if ( err ) {
+    //             res.json({success: false, error: err});
+    //         }else{
+    //             res.json({success: true, message: 'Product Images fixed'});
+    //         }
+    //     });
+    // })
+    fs.readdir(`${__dirname}/../uploads/products`, (err, files) => { 
+        if (err) 
+          res.json({success: false, error: err}); 
+        else { 
+          files.forEach(file => { 
+            let barcode = file.replace(/(.jpg|.jpeg|.png|.jfif)/, '');
+            let product = Product.findOne({barcode: barcode}, function(err, product){
+                fs.rename(`${__dirname}/../uploads/products/${file}`, `${__dirname}/../uploads/products/${product.sku}.jpg`, function(err) {
+                    if ( err ) {
+                        res.json({success: false, error: err})
+                    };
+                });
+                product.primary_image = `${__dirname}/../uploads/products/${product.sku}.jpg`;
+                product.save();
+            })
+          });
+          res.json({success: true, message: 'Images Set Properly'});
+        } 
+    }) 
 };
 
 productController.brokenStock = async (req, res) => {
