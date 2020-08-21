@@ -271,7 +271,7 @@ productController.addImage = async (req, res) => {
 };
 
 productController.setProductImages = async (req, res) => {
-    let products = await Product.find({}).select('name sku');
+    let products = await Product.find({}).select('name barcode sku');
 
     products.forEach(product => {
         fs.rename(`${__dirname}/../uploads/products/${product.barcode}.${/\.(jpg|jpeg|png|jfif)/}`, `${__dirname}/../uploads/products/${product.sku}.jpg`, function(err) {
