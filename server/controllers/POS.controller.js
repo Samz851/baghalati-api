@@ -17,6 +17,7 @@
 */
 
 const POSController = {};
+const fs = require('fs');
 const https = require('axios');
 const qs = require('querystring');
 const Bcrypt = require("bcryptjs");
@@ -75,6 +76,21 @@ const getProducts = async (parameters, results, config, cb) =>{
   
 }
 var origURL = '';
+
+const getCategories = async (parameters, config) => {
+  let categories = await https.get(get_product_types_uri + '?page_size=' + parameters.page_size + '&Skip_count=' + parameters.Skip_count, config);
+  if(categories.data.items){
+    categories.data.items.forEach(async (item) => {
+      const { name, description, isActive, id } = item
+      let nCat = new Categories({name: name, description: description, isActive: isActive, id: id});
+      nCat = await nCat.save();
+    });
+    return true;
+  }else{
+    console.log('No Categories retrieved');
+    return false;
+  }
+}
 
 
 POSController.authorize = async (req, res) => {
@@ -224,15 +240,14 @@ POSController.syncTags = async (req, res) => {
 }
 
 POSController.syncInventory = async (req, res) => {
-  console.log(req.body);
   const { id, override, password } = req.body;
-  console.log(`Session id: ${id}`);
   let user = await Admins.findOne({session_id: id});
-  console.log(user);
   if(Bcrypt.compareSync(password, user.password)){
     if(override) {
+      console.log('deleting....');
       await Products.deleteMany({});
       await Categories.deleteMany({});
+      await Tags.deleteMany({});
     }
     //First get Categirues
 
@@ -246,23 +261,12 @@ POSController.syncInventory = async (req, res) => {
       Skip_count: 0 
     }
 
-    try{
-      let categories = await https.get(get_product_types_uri + '?page_size=' + params.page_size + '&Skip_count=' + params.Skip_count, config);
-
-      if(categories.data.items){
-        categories.data.items.forEach(async (item) => {
-          const { name, description, isActive, id } = item
-          let nCat = new Categories({name: name, description: description, isActive: isActive, id: id});
-          nCat = await nCat.save();
-        });
-      }else{
-        console.log('No Categories retrieved');
-        res.json({success: false, line: 218});
-      }
-    }catch(error){
-      console.log('Error fetching Categories');
-      res.json({success: false, line: 222});
+    let categories = await getCategories(params, config);
+    if(!categories){
+      console.log(categories);
+      process.exit(1);
     }
+
     let results = [];
 
     try{
@@ -270,64 +274,96 @@ POSController.syncInventory = async (req, res) => {
         page_size: 20,
         Skip_count: 0 
       }
+      const config = {
+        headers: {
+          'Authorization': 'Bearer ' + user.pos_data.access_token
+        } 
+      }
 
-      let products = await getProducts(parameters);
+      let products = await getProducts(parameters, results, config, function(d){results = d;});
 
-
+      let error_skus = [];
       // let tag, category;
       results.forEach(async (product) => {
         try{
-          var tag = await Tags.findOne({name: product.product_tags[0].name.replace(' Center', '')});
-          if(tag == null){
-            console.log('Tag name');
-            console.log(product.product_tags[0].name.replace(' Center', ''));
+          console.log('Tag name');
+          console.log(product.product_tags[0]);
+          console.log(product.sku);
+          error_skus.push(product.sku);
+          var tag = await Tags.findOne({name: product.product_tags[0].name});
+          if(tag){
+            tag = new Tags({name: product.product_tags[0].name, id: product.product_tags[0].tagId});
+            await tag.save();
           }
         }catch(error){
           console.log('Error fetching tag');
           console.log(error);
+          console.log(product);
+          return;
         }
 
         try{
+          console.log('Product!!!!');
+          console.log(product.product_type);
           var category = await Categories.findOne({name: product.product_type[0].type_name})
+          if(!category){
+            category = new Categories({name: product.product_type[0].type_name, isActive: true, id: product.product_type[0].type_id});
+            await category.save();
+            category = await Categories.findOne({name: product.product_type[0].type_name})
+          }
         }catch(error){
           console.log('Error fetching category');
           console.log(error);
+          error_skus.push(product.sku)
+          // console.log(product.sku);
+          // process.exit(1);
+          // console.log(product.product_type);
+        }
+        if(tag && category){
+          try{
+            let obj = {
+              parentId: product.parentId,
+              name: product.name,
+              description: product.description,
+              sku: product.sku,
+              primary_image: product.primary_image,
+              bran_name: product.bran_name,
+              product_tags:[tag.tagId],
+              product_type:[category._id],
+              price: { 
+                  price_ex_tax: product.product_outlets[0].price_ex_tax,
+                  tax_rate:product.product_outlets[0].tax_rate,
+                  price_inc_tax:product.product_outlets[0].price_inc_tax,
+              },
+              isActive: product.isActive,
+            }
+          }catch(error){
+            // console.log(category);
+            throw error;
+          }
+  
+          try{
+            let nProduct = new Products({...obj});
+            await nProduct.save();
+          }catch(error){
+            throw error;
+          }
         }
 
-        let obj = {
-          parentId: product.parentId,
-          name: product.name,
-          description: product.description,
-          sku: product.sku,
-          primary_image: product.primary_image,
-          bran_name: product.bran_name,
-          product_tags:[tag._id],
-          product_type:[category._id],
-          price: { 
-              price_ex_tax: product.product_outlets[0].price_ex_tax,
-              tax_rate:product.product_outlets[0].tax_rate,
-              price_inc_tax:product.product_outlets[0].price_inc_tax,
-          },
-          isActive: product.isActive,
-        }
-
-        try{
-          let nProduct = new Products({...obj});
-          await nProduct.save();
-        }catch(error){
-          console.log('Error saving product');
-          console.log(error);
-        }
       });
+      console.log('ERRORS');
+      console.log(error_skus);
+      let data = JSON.stringify(error_skus);
+      fs.writeFileSync('products-errors.txt', data);
+      process.exit(1);
+      user.pos_data.lastUpdate = Date.now();
+      user.save();
       res.json({success: true})
     }catch(error){
       console.log('Error fetching products');
       console.log(error);
-      res.json({success: false, line: 311});
+      res.json({success: false, line: 326});
     }
-
-  }else{
-    res.json({success: false, line: 315})
   }
 
   //fetch products

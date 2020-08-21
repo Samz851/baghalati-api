@@ -23,13 +23,15 @@ const productSchema = new Schema(
         parentId:{type: String},
         name:{type: String, required: true},
         name_ar: {type: String}, 
-        description:{type: String, required: true},
+        description:{type: String},
         sku:{ type: Number, required: true, unique: true },
         primary_image:{type: String},
-        bran_name:{type: String, required: true},
+        brand_name:{type: String, required: true},
+        brand_name_eng: {type: String},
         supplier_code:{type: String},
         sales_code:{type: String},
         purchase_code:{type: String},
+        barcode: {type: Number},
         product_tags:[
             {
                 type: mongoose.Schema.Types.ObjectId,

@@ -116,7 +116,7 @@ adminsController.verifySID = async (req, res) => {
             let products = await https.get('https://api.hikeup.com/api/v1/products/get_all?page_size=1&Skip_count=0', {headers: {
                 'Authorization': 'Bearer ' + user.pos_data.access_token
             }});
-            user_is_connected = true;
+            user_is_connected = user.is_connected = true;
 
         }catch(e){
             user_is_connected = user.is_connected = false;

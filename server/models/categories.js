@@ -21,7 +21,7 @@ const { Schema }  = mongoose;
 const categorySchema = new Schema(
     {
 		name: { type: String, unique: true, required: true },
-		name_ar: { type: String, unique: true },
+		name_eng: { type: String },
 		description: { type: String },
 		description_ar: { type: String},
 		isActive: { type: Boolean },

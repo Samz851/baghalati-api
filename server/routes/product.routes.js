@@ -41,6 +41,7 @@ router.put('/addimage/:id', productsController.addImage);
 router.post('/', productsController.createProduct);
 router.post('/getProductsByIDs', productsController.getProductsByIDs);
 router.post('/setProductImages', productController.setProductImages);
+router.post('/importProducts', cors({origin: '*'}), productController.uploadImport)
 
 
 router.delete('/:id', productsController.deleteProduct);

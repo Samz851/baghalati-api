@@ -46,11 +46,9 @@ const AdminSchema = new Schema({
         type: String
 
     },
-
     csrf_id: {
         type: String
     },
-
     pos_data: {
         access_token: {
             type: String

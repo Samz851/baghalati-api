@@ -41,8 +41,8 @@ app.set('eventEmitter', eventEmitter);
  * M I D D L E W A R E S
  */
 app.use(morgan('dev'));
-app.use(express.json());
 app.use(cors({origin: '*'}));
+app.use(express.json());
 app.use(bodyParser.urlencoded({
     extended: true
   }));
