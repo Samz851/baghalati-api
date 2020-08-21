@@ -295,7 +295,7 @@ productController.setProductImages = async (req, res) => {
                         res.json({success: false, error: err})
                     };
                 });
-                product.primary_image = `${__dirname}/../uploads/products/${product.sku}.jpg`;
+                product.primary_image = `https://api.jubnawebaith.com/uploads/products/${product.sku}.jpg`;
                 product.save();
             })
           });
