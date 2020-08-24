@@ -85,23 +85,26 @@ productController.getTags = async (req, res) => {
     }
 };
 
-// productController.arabizeTags = async (req, res) => {
-//     const { array } = req.body;
-//     console.log(typeof req.body.array);
-//     for (var item in array){
-//         // console.log(`Key: ${item} and Value: ${array[item]}`);
-//         try{
-//             let tag = await Product.findOne({ sku: parseInt(item) });
-//             if(tag){
-//                 tag.name_ar = array[item];
-//                 await tag.save();
-//             } 
-//         }catch(error){
-//             console.log(`Error item: ${item} and value is: ${array[item]}`)
-//             throw error;
-//         }
-//     }
-// }
+productController.searchProducts = async (req, res) => {
+    console.log('HEREEEE')
+    const { term } = req.params;
+
+    try{
+        let products = await Product.fuzzySearch(term);
+        if(products){
+            res.json({
+                success: true,
+                products: products
+            })
+        }
+    }catch(error){
+        res.json({
+            success: false,
+            error: error
+        })
+    }
+
+}
 
 productController.getCount = async (req, res) => {
     const count = await Product.countDocuments();
@@ -272,17 +275,6 @@ productController.addImage = async (req, res) => {
 };
 
 productController.setProductImages = async (req, res) => {
-    // let products = await Product.find({}).select('name barcode sku');
-
-    // products.forEach(product => {
-    //     fs.rename(`${__dirname}/../uploads/products/${product.barcode + /(.jpg|.jpeg|.png|.jfif)/}`, `${__dirname}/../uploads/products/${product.sku}.jpg`, function(err) {
-    //         if ( err ) {
-    //             res.json({success: false, error: err});
-    //         }else{
-    //             res.json({success: true, message: 'Product Images fixed'});
-    //         }
-    //     });
-    // })
     fs.readdir(`${__dirname}/../uploads/products`, (err, files) => { 
         if (err) 
           res.json({success: false, error: err}); 

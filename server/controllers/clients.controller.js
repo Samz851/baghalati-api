@@ -28,6 +28,13 @@ const HTMLgenerator = require('../services/HTMLgenerator');
 const Emailer = require('../services/Emailer');
 const PushManager = require('../services/PushManager');
 
+
+clientsController.forgotPass = async(req, res) => {
+    const { email } = req.body;
+
+
+}
+
 clientsController.getClients = async (req, res) => {
     const clients = await Clients.find();
     res.json(clients);
@@ -112,32 +119,36 @@ clientsController.sendActivationLink = async (req, res) => {
             contact_email : email
         });
         if(user){
-            const activation = Config.activationKey();
-            user.activation_key = activation;
-            await user.save();
-            const html = await HTMLgenerator({
-                template: 'activation.email',
-                params: {name: user.full_name , logo: Config.LogoBase64, activation_link: 'https://api.jubnawebaith.com/v1/clients/activate/' + activation}
-             });
-
-             const data = {
-                from: 'JWB Team <admin@jubnawebaith.com>',
-                to: user.contact_email,
-                subject: 'Activate your account',
-                html: html
-             };
-
-             try{
-                const result = await Emailer(data);
-                res.send({
-                    success: true,
-                    message: "Check your email!",
+            if(user.is_active){
+                
+            }else{
+                const activation = Config.activationKey();
+                user.activation_key = activation;
+                await user.save();
+                const html = await HTMLgenerator({
+                    template: 'activation.email',
+                    params: {name: user.full_name , logo: Config.LogoBase64, activation_link: 'https://api.jubnawebaith.com/v1/clients/activate/' + activation}
                 });
-             }catch(error){
-                 res.json({success: false, message: 'لم نتمكن من إرسال رابط التفعيل '})
-                 console.log(error);
-                 throw error
-             }
+
+                const data = {
+                    from: 'JWB Team <admin@jubnawebaith.com>',
+                    to: user.contact_email,
+                    subject: 'Activate your account',
+                    html: html
+                };
+
+                try{
+                    const result = await Emailer(data);
+                    res.send({
+                        success: true,
+                        message: "Check your email!",
+                    });
+                }catch(error){
+                    res.json({success: false, message: 'لم نتمكن من إرسال رابط التفعيل '})
+                    console.log(error);
+                    throw error
+                }
+            }
         }else{
             res.json({success: false, message: 'لا يوجد حساب بهذا الأيميل'})
         }

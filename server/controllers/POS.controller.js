@@ -437,8 +437,9 @@ POSController.fetchNewProducts = async (req, res) => {
           name: prod.name,
           description: prod.description,
           sku: prod.sku,
+          barcode: prod.barcode,
           primary_image: prod.primary_image,
-          bran_name: prod.bran_name,
+          brand_name: prod.bran_name,
           product_tags:[tagID],
           product_type:[catID],
           price: { 

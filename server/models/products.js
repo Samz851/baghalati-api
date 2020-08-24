@@ -16,13 +16,14 @@
 */
 
 const mongoose = require('mongoose');
+const mongoose_fuzzy_searching = require("mongoose-fuzzy");
 const { Schema }  = mongoose;
 
 const productSchema = new Schema(
     {
         parentId:{type: String},
         name:{type: String, required: true},
-        name_ar: {type: String}, 
+        name_eng: {type: String}, 
         description:{type: String},
         sku:{ type: Number, required: true, unique: true },
         primary_image:{type: String},
@@ -59,7 +60,9 @@ const productSchema = new Schema(
     {timestamps: true, autoIndex: true}
 );
 
-
+productSchema.plugin(mongoose_fuzzy_searching, {
+    fields: ["name", "name_eng"]
+});
 
 module.exports = mongoose.model('products', productSchema);
 
