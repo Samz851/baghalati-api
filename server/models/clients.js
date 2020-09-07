@@ -43,7 +43,7 @@ const ClientSchema = new Schema({
     },
     date_of_birth: {
         type: Date,
-        required: true,
+        required: false,
         min: '1900-01-01',
 
     },

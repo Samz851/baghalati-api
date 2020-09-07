@@ -1,5 +1,6 @@
-const api_key = 'key-be742a5d437c8958e763f1a361003941';
-const domain = 'mg.jubnawebaith.com';
+const api_key = 'key-19a844f86e8b94e96832db4268d400dd';
+// const domain = 'mg.jubnawebaith.com';
+const domain = 'mg.samiscoding.com';
 const mailgun = require('mailgun-js')({apiKey: api_key, domain: domain});
 
 module.exports =  async (data) => {
@@ -8,7 +9,7 @@ module.exports =  async (data) => {
       return mailgun.messages().send(data, (error, result) => {
          if (error) {
             console.log('Errored Email Markup!!!!');
-            console.log(JSON.stringify(data));
+            console.log(error);
             // winston.error(`Error sending ${data.subject}`, error);
             return reject(error);
          }
