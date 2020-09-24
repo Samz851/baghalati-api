@@ -80,13 +80,13 @@ ordersController.pushOrder = async (req, res) => {
     })
 
     let user = await Clients.findOne({ _id: decoded.customer }).exec();
-    console.log(`ORDER ONE ADDRESS USER IS:::: ${decoded.address._id}`);
+    // console.log(`ORDER ONE ADDRESS USER IS:::: ${decoded.address._id}`);
     user.billing_address.map(item => console.log(item._id));
     let add = await user.billing_address.find( ( o ) => {
-        console.log(`The Order address ID is: ${o._id} and user address ID is: ${decoded.address._id}`)
+        // console.log(`The Order address ID is: ${o._id} and user address ID is: ${decoded.address._id}`)
        return  o._id == decoded.address._id
     })
-    console.log(`the address is: ${add} `);
+    // console.log(`the address is: ${add} `);
 
     //Prepare Order Obj
     let orderObj = {
@@ -102,6 +102,12 @@ ordersController.pushOrder = async (req, res) => {
     let order = new Orders(orderObj);
     try{
         let save = await order.save();
+        console.log('THE ORDER');
+        console.log(save);
+        let push_user_order = await Clients.update(
+            {_id: decoded.customer},
+            { $push: { orders: mongoose.Types.ObjectId(save._id) } }
+        ).exec();
         try{
             let new_order = await Orders.findOne({
                                 _id: mongoose.Types.ObjectId(save._id)

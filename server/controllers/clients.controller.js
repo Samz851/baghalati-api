@@ -531,10 +531,11 @@ clientsController.getClient = async (req, res) => {
                 sub_accounts: user.sub_accounts,
                 favorites: user.favorites,
                 gender: user.gender || '',
-                sid: user.session_id
+                sid: user.session_id,
+                orders: user.orders
             }, Config.jwt.secret);
-            var decoded = jwt.verify(token, Config.jwt.secret);
-            console.log(decoded);
+            // var decoded = jwt.verify(token, Config.jwt.secret);
+            // console.log(decoded);
             res.send({
                 success: true,
                 message: "The username and password combination is correct!",

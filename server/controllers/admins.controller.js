@@ -133,7 +133,7 @@ adminsController.verifySID = async (req, res) => {
 
 adminsController.pushBanners = async (req, res) => {
     let optionsObj = {
-        path: req.file.path,
+        path: 'https://api.jubnawebaith.com/' + req.file.path.replace('server/', ''),
         name: req.file.originalname
     };
     try{
@@ -147,10 +147,10 @@ adminsController.pushBanners = async (req, res) => {
 
 adminsController.getBanners = async (req, res) => {
     let banners = await Options.find({type: 'banner'}, null,{sort: {'createdAt': -1}, limit: 3});
-    if(banners){
+    if(banners.length > 0){
         res.json({success: true, banners: banners});
     }else{
-        res.json({success: false, message: 'Failed to fetch banners'})
+        res.json({success: false, message: 'Failed to fetch banners', model: banners})
     }
 }
 
