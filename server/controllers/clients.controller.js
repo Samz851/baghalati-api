@@ -518,7 +518,7 @@ clientsController.getClient = async (req, res) => {
             message: "The SID is invalid"
         });
     }else{
-        user.session_id = Config.jwt.uniqid();
+        // user.session_id = Config.jwt.uniqid();
         let success = await user.save();
         if(success){
             var token = jwt.sign({

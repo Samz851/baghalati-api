@@ -171,7 +171,7 @@ ordersController.ordersByUser = async (req, res) => {
             res.json({success: false, data: 'EMPTY'})
         }
     }catch(error){
-        throw error
+        res.json({success: false, data: 'EMPTY'})
     }
 
 
