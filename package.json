@@ -22,7 +22,7 @@
     "formidable": "^1.2.2",
     "jsonwebtoken": "^8.5.1",
     "mailgun-js": "^0.22.0",
-    "mongoose": "^5.2.7",
+    "mongoose": "^5.7.5",
     "mongoose-auto-increment": "^5.0.1",
     "mongoose-fuzzy": "^1.0.2",
     "mongoose-fuzzy-search": "0.0.4",
