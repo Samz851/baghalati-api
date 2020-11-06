@@ -23,7 +23,7 @@ const categorySchema = new Schema(
 		name: { type: String, unique: true, required: true },
 		name_eng: { type: String },
 		description: { type: String },
-		description_ar: { type: String},
+		description_eng: { type: String},
 		isActive: { type: Boolean },
 		id: { type: Number }
     },

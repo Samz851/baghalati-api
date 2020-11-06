@@ -87,10 +87,10 @@ productController.getTags = async (req, res) => {
 
 productController.searchProducts = async (req, res) => {
     console.log('HEREEEE')
-    const { term } = req.params;
-
+    const { term, cat } = req.query;
     try{
-        let products = await Product.fuzzySearch(term);
+        let options = cat !== 'all' ? {product_tags: { $in: cat }} : {}
+        let products = await Product.fuzzySearch(term, options);
         if(products){
             res.json({
                 success: true,
@@ -306,19 +306,18 @@ productController.uploadImport = async(req, res) => {
     const { SID } = req.body;
 
     const form = formidable();
-
+    var counter = 1;
     form.parse(req, async (err, fields, files) => {
         if(files.file){
             await Product.deleteMany({});
             await Categories.deleteMany({});
             await Tags.deleteMany({});
-            console.log(files.file.path);
             const result = excelToJson({
                 source: fs.readFileSync(files.file.path), // fs.readFileSync return a Buffer
                 header:{
                     rows: 1
                 },
-                sheets: ['Product'],
+                // sheets: ['Product'],
                 columnToKey: {
                     'A': '{{A1}}',
                     'B': '{{B1}}',
@@ -362,57 +361,267 @@ productController.uploadImport = async(req, res) => {
                     'AN': '{{AN1}}',
                     'AO': '{{AO1}}',
                     'AP': '{{AP1}}',
+                    'AQ': '{{AQ1}}',
+                    'AR': '{{AR1}}',
+                    'AS': '{{AS1}}'
 
                 }
             });
-            console.log(typeof result);
-            let keysArr = Object.values(result);
-            let productObjs = keysArr[0].map(async (product)=>{
-                // console.log(`PRODUCT OBJECT IS ${typeof product}`);
-                var tag = await Tags.findOne({name: product['Product tag']}).exec();
-                if(!tag){
-                  tag = new Tags({name: product['Product tag']});
+            // console.log(Object.values(result.Product));
+            let valArr = Object.values(result.Product);
+            for await (const product of valArr){
+                let CatExist = await Categories.find({name: product['Product type']}).exec();
+                let catID, tagID;
+                let TagExist = await Tags.find({name: product['Product tag']}).exec();
+                console.log(CatExist.length);
+                if(CatExist.length == 0 ){
+                  let nCat = new Categories({name: product['Product type'], name_eng: product['Product type_eng'], isActive: true});
                   try{
-                    await tag.save();
-                    var tag = await Tags.findOne({name: product['Product tag']}).exec();
+                      nCat = await nCat.save();
+                      catID = nCat._id;
                   }catch(err){
-                    var tag = await Tags.findOne({name: product['Product tag']}).exec();
+                      console.log('ERROR CATEGORY SAVE !!!!!');
+                      let CatExist = await Categories.find({name: product['Product type']}).exec();
+                      catID = CatExist._id;
+                      console.log(catID);
                   }
+                  
+                }else{
+                  catID = CatExist._id;
                 }
-                var category = await Categories.findOne({name: product['Product type']}).exec();
-                if(!category){
-                  category = new Categories({name: product['Product type'], isActive: true});
-                  try{
-                    await category.save();
-                  }catch(err){
-                      category = await Categories.findOne({name: product['Product type']}).exec();
-                  }
+        
+                if(TagExist.length == 0){
+                  let tagM = new Tags({name: product['Product tag'], name_eng: product['Product tag_eng']});
+                  await tagM.save();
+                  tagID = tagM._id;
+                }else{
+                  tagID = TagExist._id;
                 }
                 let obj = {
-                    parentId: product['parentId'] && product['parentId'],
-                    name: product['Name'] && product['Name'],
-                    description: product['Description'] && product['Description'],
-                    sku: product['SKU'] && product['SKU'],
-                    primary_image: product.primary_image && product.primary_image,
-                    brand_name: product['Brand name'] && product['Brand name'],
-                    barcode: product['Barcode'],
-                    product_tags:[tag._id],
-                    product_type:[category._id],
-                    price: { 
-                        price_ex_tax: product['Price Excluding Tax'],
-                        tax_rate: 0.15,
-                        price_inc_tax:product['Retail price'],
-                    },
-                    isActive: product['Active'] == 'TRUE' ? true : false
-                  };
-                  try{
-                      let nProduct = new Product({...obj});
-                      await nProduct.save();
-                    }catch(error){
-                      throw error;
-                    }
-                return obj;
-            });
+                        parentId: product['parentId'] && product['parentId'],
+                        name: product['Name'] && product['Name'],
+                        name_eng: product['Name_eng'] && product['Name_eng'],
+                        description: product['Description'] && product['Description'],
+                        sku: product['SKU'] && product['SKU'],
+                        primary_image: product['Image URL'] && product['Image URL'],
+                        brand_name: product['Brand name'] && product['Brand name'],
+                        brand_name_eng: product['Brand name_eng'] && product['Brand name_eng'],
+                        barcode: product['Barcode'],
+                        product_tags:[tagID],
+                        product_type:[catID],
+                        price: { 
+                            price_ex_tax: product['Price Excluding Tax'],
+                            tax_rate: 0.15,
+                            price_inc_tax:product['Retail price'],
+                        },
+                        isActive: product['Active'] == 'TRUE' ? true : false
+                    };
+                
+                try{
+                    let nProduct = new Product({...obj});
+                    nProduct.save();
+                }catch(error){
+                    throw error;
+                }
+            }
+            // valArr.forEach( async (product) => {
+            //     let CatExist = await Categories.find({name: product['Product type']}).exec();
+            //     let catID, tagID;
+            //     let TagExist = await Tags.find({name: product['Product tag']}).exec();
+            //     console.log(CatExist.length);
+            //     if(CatExist.length == 0 ){
+            //       let nCat = new Categories({name: product['Product type'], name_eng: product['Product type_eng'], isActive: true});
+            //       try{
+            //           nCat = await nCat.save();
+            //           catID = nCat._id;
+            //       }catch(err){
+            //           console.log('ERROR CATEGORY SAVE !!!!!');
+            //           let CatExist = await Categories.find({name: product['Product type']}).exec();
+            //           catID = CatExist._id;
+            //           console.log(catID);
+            //       }
+                  
+            //     }else{
+            //       catID = CatExist._id;
+            //     }
+        
+            //     if(TagExist.length == 0){
+            //       let tagM = new Tags({name: product['Product tag'], name_eng: product['Product tag_eng']});
+            //       await tagM.save();
+            //       tagID = tagM._id;
+            //     }else{
+            //       tagID = TagExist._id;
+            //     }
+            //     let obj = {
+            //             parentId: product['parentId'] && product['parentId'],
+            //             name: product['Name'] && product['Name'],
+            //             description: product['Description'] && product['Description'],
+            //             sku: product['SKU'] && product['SKU'],
+            //             primary_image: product['Image URL'] && product['Image URL'],
+            //             brand_name: product['Brand name'] && product['Brand name'],
+            //             brand_name_eng: product['Brand name_eng'] && product['Brand name_eng'],
+            //             barcode: product['Barcode'],
+            //             product_tags:[tagID],
+            //             product_type:[catID],
+            //             price: { 
+            //                 price_ex_tax: product['Price Excluding Tax'],
+            //                 tax_rate: 0.15,
+            //                 price_inc_tax:product['Retail price'],
+            //             },
+            //             isActive: product['Active'] == 'TRUE' ? true : false
+            //         };
+                
+            //     try{
+            //       let nProduct = new Product({...obj});
+            //       nProduct.save();
+            //     }catch(error){
+            //         throw error;
+            //     }
+            //   })
+            // valArr.map(async product => {
+            //     console.log(counter);
+            //     counter++;
+            //     var tag = '';
+            //     await Tags.findOne({name: product['Product tag']}, async (err, the_tag) =>{
+            //         if(err) throw err;
+            //         if(the_tag){
+            //             console.log('found tag');
+            //             tag = the_tag;
+            //         }else{
+            //             console.log('TAG DOESNT EXIST');
+            //             the_tag = new Tags({name: product['Product tag'], name_eng: product['Product tag_eng'], });
+            //             await the_tag.save((err, doc) => {
+            //                 if(err) throw err;
+            //                 tag = doc;
+            //             })
+            //         };
+
+            //         var category = '';
+            //         await Categories.findOne({name: product['Product type']}, async (err, the_cat) => {
+            //             if(err) throw err;
+            //             if(the_cat){
+            //                 console.log('found category');
+            //                 category = the_cat;
+            //             }else{
+            //                 console.log('Category doesnt exist');
+            //                 the_cat = new Categories({name: product['Product type'], name_eng: product['Product type_eng'], isActive: true});
+            //                 await the_cat.save((err, doc) => {
+            //                     if(err) throw err;
+            //                     category = doc;
+
+            //                     let obj = {
+            //                             parentId: product['parentId'] && product['parentId'],
+            //                             name: product['Name'] && product['Name'],
+            //                             description: product['Description'] && product['Description'],
+            //                             sku: product['SKU'] && product['SKU'],
+            //                             primary_image: product['Image URL'] && product['Image URL'],
+            //                             brand_name: product['Brand name'] && product['Brand name'],
+            //                             brand_name_eng: product['Brand name_eng'] && product['Brand name_eng'],
+            //                             barcode: product['Barcode'],
+            //                             product_tags:[tag._id],
+            //                             product_type:[category._id],
+            //                             price: { 
+            //                                 price_ex_tax: product['Price Excluding Tax'],
+            //                                 tax_rate: 0.15,
+            //                                 price_inc_tax:product['Retail price'],
+            //                             },
+            //                             isActive: product['Active'] == 'TRUE' ? true : false
+            //                             };
+            //                     nProduct = new Product({...obj});
+            //                     nProduct.save((err, doc) => {
+            //                         if(err) throw err;
+            //                         console.log('Successfully saved product');
+            //                         if(doc){
+                                        
+            //                         }
+            //                     })
+            //                 })
+            //             }
+            //         });
+            //     })
+            // })
+
+            
+            // let keysArr = Object.values(result);
+            // console.log(typeof keysArr[0]);
+
+            // keysArr[0].map(async (product)=>{
+            //     // console.log('The Product is');
+            //     // console.log(product);
+            //     try{
+            //         var tag = await Tags.findOne({name: product['Product tag']}).exec();
+            //         console.log('this is the tag');
+            //         console.log(tag);
+            //         if(!tag){
+            //             console.log('TAG DOESNT EXIST');
+            //           tag = new Tags({name: product['Product tag'], name_eng: product['Product tag_eng']});
+            //           try{
+            //             await tag.save(err => {
+            //                 if(err){
+            //                     console.log('there is an error');
+            //                     throw err;
+            //                 }
+            //             });
+            //             try{
+            //                 var tag = await Tags.findOne({name: product['Product tag']}).exec();
+            //                 console.log('FOUND TAG!!!!');
+            //                 console.log(tag);
+            //             }catch(err){
+            //                 throw err;
+            //             }
+
+            //           }catch(err){
+            //             var tag = await Tags.findOne({name: product['Product tag']}).exec();
+            //           }
+            //         }
+            //     }catch(err){
+            //         throw err;
+            //     }
+
+            //     try{
+            //         var category = await Categories.findOne({name: product['Product type']}).exec();
+            //         if(!category){
+            //           category = new Categories({name: product['Product type'], name_eng: product['Product type_eng'], isActive: true});
+            //           try{
+            //             await category.save();
+            //           }catch(err){
+            //               category = await Categories.findOne({name: product['Product type']}).exec();
+            //           }
+            //         }
+            //     }catch(err){
+            //         throw err
+            //     }
+
+            //     let obj = {
+            //         parentId: product['parentId'] && product['parentId'],
+            //         name: product['Name'] && product['Name'],
+            //         description: product['Description'] && product['Description'],
+            //         sku: product['SKU'] && product['SKU'],
+            //         primary_image: product['Image URL'] && product['Image URL'],
+            //         brand_name: product['Brand name'] && product['Brand name'],
+            //         brand_name_eng: product['Brand name_eng'] && product['Brand name_eng'],
+            //         barcode: product['Barcode'],
+            //         product_tags:[tag._id],
+            //         product_type:[category._id],
+            //         price: { 
+            //             price_ex_tax: product['Price Excluding Tax'],
+            //             tax_rate: 0.15,
+            //             price_inc_tax:product['Retail price'],
+            //         },
+            //         isActive: product['Active'] == 'TRUE' ? true : false
+            //       };
+            //       try{
+            //           let nProduct = new Product({...obj});
+            //           await nProduct.save(error => {
+            //             //   console.log('The Product is');
+            //             //   console.log(product);
+            //               if (error){throw error;}
+            //           });
+            //         }catch(error){
+            //           throw error;
+            //         }
+            //     return obj;
+            // });
             res.json({success: true, message: 'Import complete'});
         }
     })

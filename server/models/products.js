@@ -16,7 +16,7 @@
 */
 
 const mongoose = require('mongoose');
-const mongoose_fuzzy_searching = require("mongoose-fuzzy");
+const mongoose_fuzzy_searching = require("mongoose-fuzzy-searching");
 const { Schema }  = mongoose;
 
 const productSchema = new Schema(

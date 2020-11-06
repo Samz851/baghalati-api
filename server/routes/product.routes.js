@@ -31,7 +31,7 @@ router.get('/inactives', productsController.getInactives);
 router.get('/inactives/count', productsController.getActivesCount);
 router.get('/brokenstock', productsController.brokenStock);
 router.get('/:id', productsController.getProduct);
-router.get('/search/:term', productController.searchProducts);
+router.post('/search/', productController.searchProducts);
 router.get('/activate/:id', productsController.activateProduct);
 router.get('/deactivate/:id', productsController.deactivateProduct);
 // router.post('/arabizeTags', productsController.arabizeTags);
