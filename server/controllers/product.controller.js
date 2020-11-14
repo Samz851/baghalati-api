@@ -310,8 +310,8 @@ productController.uploadImport = async(req, res) => {
     form.parse(req, async (err, fields, files) => {
         if(files.file){
             await Product.deleteMany({});
-            await Categories.deleteMany({});
-            await Tags.deleteMany({});
+            // await Categories.deleteMany({});
+            // await Tags.deleteMany({});
             const result = excelToJson({
                 source: fs.readFileSync(files.file.path), // fs.readFileSync return a Buffer
                 header:{
@@ -382,12 +382,14 @@ productController.uploadImport = async(req, res) => {
                   }catch(err){
                       console.log('ERROR CATEGORY SAVE !!!!!');
                       let CatExist = await Categories.find({name: product['Product type']}).exec();
-                      catID = CatExist._id;
+                      catID = CatExist._doc._id;
                       console.log(catID);
                   }
                   
                 }else{
-                  catID = CatExist._id;
+                  catID = CatExist[0]._doc._id;
+                //   console.log('Cat ID is:');
+                //   console.log(CatExist)
                 }
         
                 if(TagExist.length == 0){
@@ -395,7 +397,9 @@ productController.uploadImport = async(req, res) => {
                   await tagM.save();
                   tagID = tagM._id;
                 }else{
-                  tagID = TagExist._id;
+                  tagID = TagExist[0]._doc._id;
+                //   console.log('Tag ID is:');
+                //   console.log(TagExist)
                 }
                 let obj = {
                         parentId: product['parentId'] && product['parentId'],

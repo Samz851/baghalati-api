@@ -433,12 +433,33 @@ clientsController.deletePhones = async (req, res) => {
 };
 
 clientsController.deleteClient = async (req, res) => {
-    const { id } = req.params;
+    const { id, pass } = req.body;
 
-    await Clients.findByIdAndRemove(id)
-        .then( () => {
-            res.json({"status":"200"});
-        });
+    try{
+        var user = await Clients.findById(id).exec();
+
+        if (!Bcrypt.compareSync(req.body.password, user.password)) {
+            return res.status(400).send({
+                success: false,
+                message: "The password is invalid"
+            });
+        }else{
+            await Clients.findByIdAndRemove(id)
+            .then( () => {
+                return res.status(200).send({
+                    success: true,
+                    message: "Account deleted successfuly"
+                });
+            });
+        }
+    }catch(e){
+        return res.status(400).send({
+            success: false,
+            message: "Issue deleting account, Please contact admin@jubnawebaith.com"
+        })
+    }
+
+
 };
 
 clientsController.clientAuthentication = async (req,res) =>{

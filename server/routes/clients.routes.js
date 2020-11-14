@@ -48,7 +48,7 @@ router.put('/paymentcard/:id/:idcard', clientsController.editPaymentCard);
 router.delete('/email/:id/:email', clientsController.deleteEmails);
 router.delete('/address/:id/:address', clientsController.deleteAddresses);
 router.delete('/phone/:id/:phone', clientsController.deletePhones);
-router.delete('/:id',clientsController.deleteClient);
+router.post('/delete',clientsController.deleteClient);
 router.delete('/paymentcard/:id/:idcard', clientsController.deletePaymentCard);
 
 module.exports = router;
