@@ -30,8 +30,8 @@ const PushManager = require('../services/PushManager');
 
 
 clientsController.forgotPass = async(req, res) => {
-    const { email } = req.body;
-
+    const { email, new_password } = req.body;
+    
 
 }
 

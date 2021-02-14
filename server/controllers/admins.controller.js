@@ -21,6 +21,7 @@ const adminsController = {};
 const Admins = require('../models/admins');
 const Options = require('../models/options');
 const Drivers = require('../models/drivers');
+const Coupons = require('../models/coupons');
 const Config = require('../../config');
 const jwt = require('jsonwebtoken');
 const https = require('axios');
@@ -220,6 +221,60 @@ adminsController.deleteUser = async (req, res) => {
 
     }
 }
+
+adminsController.fetchCoupons = async (req, res) => {
+    let { sid } = req.params;
+    let user = await Admins.findOne({session_id: sid}).exec();
+    if(user){
+        let couponsArr = [];
+        let coupons = await Coupons.find({});
+        if(coupons){
+            coupons.forEach( (coupon) =>{
+                let record = {...coupon._doc}
+                //Compare two dates
+                if(Date.now() > new Date(record.end_datetime)){
+                    record.status = 'expired';
+                }else{
+                    record.status = 'active';
+                }
+                couponsArr.push(record);
+            });
+        }
+        res.json({success: true, data: couponsArr});
+    }else{
+        res.json({success: false, message: 'Failed fetching coupons!'});
+    }
+}
+
+adminsController.createCoupon = async(req, res) => {
+    const {SID, ...coupon} = req.body;
+    coupon.use_count = 0;
+    let user = await Admins.findOne({session_id: SID}).exec();
+    if(user){
+        let new_coupon = new Coupons(coupon);
+        try{
+            await new_coupon.save();
+            res.json({success: true, message: 'successful'})
+        }catch(e){
+            res.json({success: false, message: 'failed'});
+        }
+    }
+}
+
+adminsController.revokeCoupon = async(req, res) => {
+    const {code, sid} = req.query;
+
+    let user = await Admins.findOne({session_id: sid}).exec();
+    if(user){
+        try{
+            let deleting = await Coupons.deleteOne({_id: code});
+            res.json({success: true});
+        }catch(e){
+            res.json({success: false});
+        }
+    }
+}
+
 module.exports = adminsController;
 
 /** this ends this file

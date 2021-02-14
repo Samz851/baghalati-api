@@ -32,7 +32,7 @@ const productSchema = new Schema(
         supplier_code:{type: String},
         sales_code:{type: String},
         purchase_code:{type: String},
-        barcode: {type: Number},
+        barcode: {type: mongoose.Schema.Types.Mixed},
         product_tags:[
             {
                 type: mongoose.Schema.Types.ObjectId,

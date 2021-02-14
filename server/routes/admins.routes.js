@@ -44,6 +44,9 @@ router.get('/deliveryFee', adminsController.getDeliveryFee);
 router.get('/getUsers', adminsController.getUsers);
 router.post('/deleteUser', adminsController.deleteUser);
 
+router.get('/coupons/:sid', adminsController.fetchCoupons);
+router.post('/coupons', adminsController.createCoupon);
+router.delete('/coupons', adminsController.revokeCoupon);
 module.exports = router;
 /** this ends this file
 * server/routes/admins.routes

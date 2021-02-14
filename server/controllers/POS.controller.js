@@ -453,7 +453,6 @@ POSController.fetchNewProducts = async (req, res) => {
         try{
           let nProduct = new Products({...obj});
           await nProduct.save();
-          res.json({success: true, message: `Successfully updated ${updateArr.length} new products`});
         }catch(error){
           console.log('Error saving product');
           console.log(error);
@@ -461,6 +460,7 @@ POSController.fetchNewProducts = async (req, res) => {
         }
       })
     }
+    res.json({success: true, message: `Successfully updated ${updateArr.length} new products`});
   }catch(e){
     console.log( e );
     res.json({succesS: false, message: e});
