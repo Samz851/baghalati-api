@@ -66,6 +66,7 @@ const OrderSchema = new Schema({
 //     required: true
         } 
     },
+    coupon: { type: mongoose.Schema.Types.ObjectId, ref: 'coupons'},
     tax_ded: { type: mongoose.Schema.Types.Decimal128, required: false, description: "tax deduction from total_amount"},
     status: { type: String, required: true}
 

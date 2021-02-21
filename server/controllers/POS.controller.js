@@ -38,35 +38,23 @@ const authorizeURI = (user_token) => {
     return `https://api.hikeup.com/oauth/authorize?response_type=code&client_id=${client_id}&redirect_uri=${redirect_uri}&state=${user_token}&scope=all`;
 }
 
-const getProducts = async (parameters, results, config, cb) =>{
+const getProducts = async (parameters, results, config ) =>{
   // console.log('Initial Arr');
   // console.log(results.length);
+  let result = {}
   try{
-    let products = await https.get(get_products_uri + '?page_size=' + parameters.page_size + '&Skip_count=' + parameters.Skip_count, config);
-
-    if(products.data.items){
-      console.log('HIT!!!!');
-      results = results.concat(products.data.items);
-      parameters.Skip_count += 20;
-      console.log('length so far!!!');
-      console.log(results.length);
+    let fetched_products = await https.get(get_products_uri + '?page_size=' + parameters.page_size + '&Skip_count=' + parameters.Skip_count, config);
+    console.log('RESPONSE........');
+    console.log(typeof fetched_products.data.items);
+    if(fetched_products.data.items){
+      result.items = fetched_products.data.items;
     }
-    console.log(products.data.next);
-    if(products.data.next !== null){
-      console.log('doing it again');
-      try{
-        await getProducts(parameters, results, config, cb);
-      }catch(e){
-        throw e;
-      }
-
+    if(fetched_products.data.next !== null){
+      result.next = true
+    }else{
+      result.next = false;
     }
-    else{
-      console.log('tota products results!!!!!');
-      console.log(results.length);
-      cb(results);
-      return results;
-    }
+    return result;
   }catch(e){
     
     throw e;
@@ -188,7 +176,6 @@ POSController.refreshToken = async (req, res) => {
 }
 
 POSController.getProducts = async (req, res) => {
-  console.log('This is something');
   const { page, id } = req.query;
 
   let user = await Admins.findOne({session_id: id}, 'pos_data');
@@ -267,102 +254,162 @@ POSController.syncInventory = async (req, res) => {
       process.exit(1);
     }
 
-    let results = [];
-
     try{
       let parameters= {
         page_size: 20,
-        Skip_count: 0 
+        Skip_count: 0,
+        next: true
       }
       const config = {
         headers: {
           'Authorization': 'Bearer ' + user.pos_data.access_token
         } 
       }
-
-      let products = await getProducts(parameters, results, config, function(d){results = d;});
-
-      let error_skus = [];
-      // let tag, category;
-      results.forEach(async (product) => {
-        try{
-          console.log('Tag name');
-          console.log(product.product_tags[0]);
-          console.log(product.sku);
-          error_skus.push(product.sku);
-          var tag = await Tags.findOne({name: product.product_tags[0].name});
-          if(tag){
-            tag = new Tags({name: product.product_tags[0].name, id: product.product_tags[0].tagId});
-            await tag.save();
-          }
-        }catch(error){
-          console.log('Error fetching tag');
-          console.log(error);
-          console.log(product);
-          return;
-        }
-
-        try{
-          console.log('Product!!!!');
-          console.log(product.product_type);
-          var category = await Categories.findOne({name: product.product_type[0].type_name})
-          if(!category){
-            category = new Categories({name: product.product_type[0].type_name, isActive: true, id: product.product_type[0].type_id});
-            await category.save();
-            category = await Categories.findOne({name: product.product_type[0].type_name})
-          }
-        }catch(error){
-          console.log('Error fetching category');
-          console.log(error);
-          error_skus.push(product.sku)
-          // console.log(product.sku);
-          // process.exit(1);
-          // console.log(product.product_type);
-        }
-        if(tag && category){
+      
+      while(parameters.next == true){
+        let products = await getProducts(parameters, [], config);
+        console.log(`THIS IS THE TYPE`);
+        console.log( products);
+        for(item of products.items) {
+          // First fetch tags
           try{
-            let obj = {
-              parentId: product.parentId,
-              name: product.name,
-              description: product.description,
-              sku: product.sku,
-              primary_image: product.primary_image,
-              bran_name: product.bran_name,
-              product_tags:[tag.tagId],
-              product_type:[category._id],
-              price: { 
-                  price_ex_tax: product.product_outlets[0].price_ex_tax,
-                  tax_rate:product.product_outlets[0].tax_rate,
-                  price_inc_tax:product.product_outlets[0].price_inc_tax,
-              },
-              isActive: product.isActive,
+            console.log('Tag name');
+            console.log(item.product_tags[0]);
+            console.log(item.sku);
+            var tag = await Tags.findOne({name: item.product_tags[0].name});
+            if(!tag){
+              tag = new Tags({name: item.product_tags[0].name, id: item.product_tags[0].tagId});
+              await tag.save();
+              tag = await Tags.findOne({name: item.product_tags[0].name});
+            }
+            //Fetch Category
+            try{
+              var category = await Categories.findOne({name: item.product_type[0].type_name})
+              if(!category){
+                category = new Categories({name: item.product_type[0].type_name, isActive: true, id: item.product_type[0].type_id});
+                await category.save();
+                category = await Categories.findOne({name: item.product_type[0].type_name})
+              }
+            }catch(err){
+              throw err;
+            }
+  
+            // Save product
+            try{
+              let obj = {
+                parentId: item.parentId,
+                name: item.name,
+                description: item.description,
+                sku: item.sku,
+                primary_image: item.primary_image,
+                brand_name: item.bran_name || ' ',
+                product_tags:[tag._id],
+                product_type:[category._id],
+                price: { 
+                    price_ex_tax: item.product_outlets[0].price_ex_tax,
+                    tax_rate:item.product_outlets[0].tax_rate,
+                    price_inc_tax:item.product_outlets[0].price_inc_tax,
+                },
+                isActive: item.isActive,
+              }
+  
+              let nProduct = new Products({...obj});
+              await nProduct.save();
+              
+            }catch(error){
+              // console.log(category);
+              throw error;
             }
           }catch(error){
-            // console.log(category);
-            throw error;
-          }
-  
-          try{
-            let nProduct = new Products({...obj});
-            await nProduct.save();
-          }catch(error){
             throw error;
           }
         }
-
-      });
-      console.log('ERRORS');
-      console.log(error_skus);
-      let data = JSON.stringify(error_skus);
-      fs.writeFileSync('products-errors.txt', data);
-      process.exit(1);
+        parameters.next = products.next;
+        parameters.Skip_count += 20;
+        products = null;
+      }
       user.pos_data.lastUpdate = Date.now();
       user.save();
       res.json({success: true})
+
+      // let error_skus = [];
+      // let tag, category;
+      // results.forEach(async (product) => {
+      //   // try{
+      //   //   console.log('Tag name');
+      //   //   console.log(product.product_tags[0]);
+      //   //   console.log(product.sku);
+      //   //   error_skus.push(product.sku);
+      //   //   var tag = await Tags.findOne({name: product.product_tags[0].name});
+      //   //   if(tag){
+      //   //     tag = new Tags({name: product.product_tags[0].name, id: product.product_tags[0].tagId});
+      //   //     await tag.save();
+      //   //   }
+      //   // }catch(error){
+      //   //   throw error;
+      //   // }
+
+      //   // try{
+      //   //   console.log('Product!!!!');
+      //   //   console.log(product.product_type);
+      //   //   var category = await Categories.findOne({name: product.product_type[0].type_name})
+      //   //   if(!category){
+      //   //     category = new Categories({name: product.product_type[0].type_name, isActive: true, id: product.product_type[0].type_id});
+      //   //     await category.save();
+      //   //     category = await Categories.findOne({name: product.product_type[0].type_name})
+      //   //   }
+      //   // }catch(error){
+      //   //   console.log('Error fetching category');
+      //   //   console.log(error);
+      //   //   error_skus.push(product.sku)
+      //   //   throw error;
+      //   //   // console.log(product.sku);
+      //   //   // process.exit(1);
+      //   //   // console.log(product.product_type);
+      //   // }
+      //   // if(tag && category){
+      //   //   // try{
+      //   //   //   let obj = {
+      //   //   //     parentId: product.parentId,
+      //   //   //     name: product.name,
+      //   //   //     description: product.description,
+      //   //   //     sku: product.sku,
+      //   //   //     primary_image: product.primary_image,
+      //   //   //     bran_name: product.bran_name,
+      //   //   //     product_tags:[tag.tagId],
+      //   //   //     product_type:[category._id],
+      //   //   //     price: { 
+      //   //   //         price_ex_tax: product.product_outlets[0].price_ex_tax,
+      //   //   //         tax_rate:product.product_outlets[0].tax_rate,
+      //   //   //         price_inc_tax:product.product_outlets[0].price_inc_tax,
+      //   //   //     },
+      //   //   //     isActive: product.isActive,
+      //   //   //   }
+      //   //   // }catch(error){
+      //   //   //   // console.log(category);
+      //   //   //   throw error;
+      //   //   // }
+  
+      //   //   // try{
+      //   //   //   let nProduct = new Products({...obj});
+      //   //   //   await nProduct.save();
+      //   //   // }catch(error){
+      //   //   //   throw error;
+      //   //   // }
+      //   // }
+
+      // });
+    //   console.log('ERRORS');
+    //   console.log(error_skus);
+    //   let data = JSON.stringify(error_skus);
+    //   fs.writeFileSync('products-errors.txt', data);
+    //   process.exit(1);
+
     }catch(error){
       console.log('Error fetching products');
       console.log(error);
-      res.json({success: false, line: 326});
+      throw error
+      // res.json({success: false, line: 326});
     }
   }
 
@@ -381,7 +428,8 @@ POSController.fetchNewProducts = async (req, res) => {
   let results = [];
   let parameters= {
     page_size: 20,
-    Skip_count: 0 
+    Skip_count: 0,
+    next: true
   }
 
   const config = {
@@ -391,29 +439,29 @@ POSController.fetchNewProducts = async (req, res) => {
   }
 
   let updateArr = [];
-
-  try{
-    let products = await getProducts(parameters, results, config, function(d){results = d;});
-    console.log('RESULT IS::::::');
-    console.log(results.length);
-    if(results.length > 0){
-      results.forEach(item => {
-        if(!localInventory.includes(parseInt(item.sku))){
-          updateArr.push(item);
+  while(parameters.next == true){
+    let products = await getProducts(parameters, results, config);
+    if(products.items.length > 0){
+        for(item of products.items){
+          if(!localInventory.includes(parseInt(item.sku))){
+            updateArr.push(item);
+          }
         }
-      })
+        parameters.next = products.next;
+        parameters.Skip_count += 20;
+        products = null;
     }
+  }
+  try{
+
 
     if(updateArr.length > 0){
       updateArr.forEach( async (prod) => {
-        console.log('Product is::::');
-        console.log(prod.product_type[0].type_name);
-
         let prodCat = prod.product_type[0].type_name;
         let tagName = prod.product_tags[0].name;
-        let CatExist = await Categories.find({name: prodCat});
+        let CatExist = await Categories.findOne({name: prodCat});
         let catID, tagID;
-        let TagExist = await Tags.find({name: tagName});
+        let TagExist = await Tags.findOne({name: tagName});
         console.log(CatExist.length);
         if(CatExist.length == 0 ){
           console.log(prodCat);
@@ -439,7 +487,7 @@ POSController.fetchNewProducts = async (req, res) => {
           sku: prod.sku,
           barcode: prod.barcode,
           primary_image: prod.primary_image,
-          brand_name: prod.bran_name,
+          brand_name: prod.bran_name || '',
           product_tags:[tagID],
           product_type:[catID],
           price: { 
@@ -454,9 +502,7 @@ POSController.fetchNewProducts = async (req, res) => {
           let nProduct = new Products({...obj});
           await nProduct.save();
         }catch(error){
-          console.log('Error saving product');
-          console.log(error);
-          res.json({success: false, message: 'Error saving product'});
+          throw error;
         }
       })
     }

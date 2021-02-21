@@ -20,6 +20,7 @@ const Bcrypt = require("bcryptjs");
 const ordersController = {};
 const Orders = require('../models/orders');
 const Clients = require('../models/clients');
+const Coupons = require('../models/coupons');
 const Config = require('../../config');
 const jwt = require('jsonwebtoken');
 const https = require('axios');
@@ -29,13 +30,17 @@ ordersController.getActiveProducts = async (req, res) => {
     try{
         var orders = await Orders.find({
             status: { "$ne": 'delivered' }
-        }).populate('customer_id').populate('').populate({
+        }).populate('customer_id').populate('checkout_items.item').populate({
             path: 'checkout_items.item',
             populate: {
               path: 'item',
               model: 'products'
             },
         }).exec();
+        orders.forEach((item) => {
+            console.log(item.checkout_items)
+        })
+        console.log(orders);
         if(orders){
             res.json({success: true, data: orders})
         }else{
@@ -68,8 +73,6 @@ ordersController.updateOrderStatus = async (req, res) => {
 ordersController.pushOrder = async (req, res) => {
     const { token } = req.body;
     let cart_items = [];
-    console.log('THE REQ BODY IS');
-    console.log(req.body);
     var decoded = jwt.verify(token, Config.jwt.secret);
     decoded.cart.map((item, i) => {
         cart_items.push({
@@ -96,18 +99,31 @@ ordersController.pushOrder = async (req, res) => {
         delivery_time: decoded.deliveryTime,
         delivery_address: add,
         status: decoded.status,
-        device_id: decoded.device_id
+        device_id: decoded.device_id,
+    }
+    if(decoded.coupon){
+        orderObj.coupon = mongoose.Types.ObjectId(decoded.coupon)
     }
 
     let order = new Orders(orderObj);
     try{
         let save = await order.save();
-        console.log('THE ORDER');
-        console.log(save);
         let push_user_order = await Clients.update(
             {_id: decoded.customer},
             { $push: { orders: mongoose.Types.ObjectId(save._id) } }
         ).exec();
+        if(orderObj.coupon){
+            try{
+                let cObj = await Coupons.update(
+                    {_id: orderObj.coupon},
+                    { $push: {used_customers: mongoose.Types.ObjectId(decoded.customer)}, $inc: {use_count: 1}}
+                ).exec();
+            }catch(e){
+                console.log(e);
+                throw e;
+            }
+
+        }
         try{
             let new_order = await Orders.findOne({
                                 _id: mongoose.Types.ObjectId(save._id)
