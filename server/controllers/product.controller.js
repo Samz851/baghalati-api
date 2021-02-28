@@ -78,7 +78,7 @@ productController.getTags = async (req, res) => {
     let tags = await Tags.find({});
     if(tags){
         tags.forEach(( item ) => {
-            item.img = 'https://api.jubnawebaith.com/uploads/categories/' + item.name.replace(/ /g, '-') + '.png';
+            item.img = 'https://api.jubnawebaith.com/uploads/tags/' + item.id + '.svg';
         });
         res.json({success: true, categories: tags});
     }else{
