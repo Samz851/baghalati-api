@@ -23,6 +23,7 @@ const productsController = require('../controllers/product.controller');
 const productController = require('../controllers/product.controller');
 
 router.get('/', productsController.getProducts);
+router.get('/checkCoupon', productController.checkCoupon);
 router.get('/getTags', productsController.getTags);
 router.get('/count', productsController.getCount);
 router.get('/actives', productsController.getActives);
@@ -43,7 +44,6 @@ router.post('/', productsController.createProduct);
 router.post('/getProductsByIDs', productsController.getProductsByIDs);
 router.post('/setProductImages', productController.setProductImages);
 router.post('/importProducts', cors({origin: '*'}), productController.uploadImport)
-router.get('/checkCoupon', productController.checkCoupon);
 
 router.delete('/:id', productsController.deleteProduct);
 
