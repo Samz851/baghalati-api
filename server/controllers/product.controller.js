@@ -89,7 +89,7 @@ productController.getTags = async (req, res) => {
                       if(file == item.id + '.png'){
                         item.img = 'https://api.jubnawebaith.com/uploads/tags/' + item.id + '.png';
                       }else{
-                        sharp("file.svg")
+                        sharp(item.id + '.svg')
                             .png()
                             .toFile(path + item.id + '.png')
                             .then(function(info) {
