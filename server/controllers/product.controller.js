@@ -91,6 +91,8 @@ productController.getTags = async (req, res) => {
                             .png()
                             .toFile(path + item.id + '.png')
                             .then(function(info) {
+                                console.log('INFO--------');
+                                console.log(info);
                                 item.img = 'https://api.jubnawebaith.com/uploads/tags/' + item.id + '.png';
                             })
                             .catch(function(err) {
