@@ -84,6 +84,8 @@ productController.getTags = async (req, res) => {
             if(os == 'ios'){
                 fs.readdir(path, (err, files) => {
                     files.forEach(file => {
+                        console.log('THE FILE');
+                        console.log(file);
                       if(file == item.id + '.png'){
                         item.img = 'https://api.jubnawebaith.com/uploads/tags/' + item.id + '.png';
                       }else{
