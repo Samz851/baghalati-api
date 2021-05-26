@@ -82,7 +82,7 @@ productController.getTags = async (req, res) => {
     if(tags){
         tags.forEach(( item ) => {
             if(os == 'ios'){
-                await fs.readdir(path, (err, files) => {
+                fs.readdir(path, (err, files) => {
                     files.forEach(file => {
                       if(file == item.id + '.png'){
                         item.img = 'https://api.jubnawebaith.com/uploads/tags/' + item.id + '.png';
