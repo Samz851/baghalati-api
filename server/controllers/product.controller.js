@@ -24,6 +24,7 @@ const fs = require('fs');
 const formidable = require('formidable');
 const Coupons = require('../models/coupons');
 const excelToJson = require('convert-excel-to-json');
+const sharp = require("sharp");
 const { json } = require('express');
 
 productController.getProducts = async (req, res) => {
@@ -75,10 +76,32 @@ productController.getProductsByIDs = async (req, res) => {
 };
 
 productController.getTags = async (req, res) => {
+    const { os } = req.query;
+    const path = `${__dirname}/../uploads/tags/`;
     let tags = await Tags.find({});
     if(tags){
         tags.forEach(( item ) => {
-            item.img = 'https://api.jubnawebaith.com/uploads/tags/' + item.id + '.svg';
+            if(os == 'ios'){
+                await fs.readdir(path, (err, files) => {
+                    files.forEach(file => {
+                      if(file == item.id + '.png'){
+                        item.img = 'https://api.jubnawebaith.com/uploads/tags/' + item.id + '.png';
+                      }else{
+                        sharp("file.svg")
+                            .png()
+                            .toFile(path + item.id + '.png')
+                            .then(function(info) {
+                                item.img = 'https://api.jubnawebaith.com/uploads/tags/' + item.id + '.png';
+                            })
+                            .catch(function(err) {
+                                console.log(err)
+                            })
+                      }
+                    });
+                  });
+            }else{
+                item.img = 'https://api.jubnawebaith.com/uploads/tags/' + item.id + '.svg';
+            }
         });
         res.json({success: true, categories: tags});
     }else{
